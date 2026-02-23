@@ -7,6 +7,7 @@ import WorkModal from '../components/WorkModal';
 import { Box, ChevronLeft, ChevronRight, Film } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { loadCustomWorks, onCustomWorksUpdated } from '../lib/workStorage';
+import { isRemoteCatalogEnabled, loadRemoteWorks, onRemoteWorksUpdated } from '../lib/remoteCatalog';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -15,7 +16,9 @@ export default function Gallery() {
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [customWorks, setCustomWorks] = useState<Work[]>(() => loadCustomWorks());
+  const [remoteWorks, setRemoteWorks] = useState<Work[]>([]);
   const { t } = useLanguage();
+  const remoteCatalogEnabled = isRemoteCatalogEnabled();
 
   useEffect(() => {
     setCurrentPage(1);
@@ -30,7 +33,45 @@ export default function Gallery() {
     return onCustomWorksUpdated(syncWorks);
   }, []);
 
-  const allWorks = useMemo(() => [...baseWorks, ...customWorks], [customWorks]);
+  useEffect(() => {
+    if (!remoteCatalogEnabled) {
+      setRemoteWorks([]);
+      return;
+    }
+
+    let disposed = false;
+    const syncRemoteWorks = async () => {
+      try {
+        const works = await loadRemoteWorks();
+        if (!disposed) setRemoteWorks(works);
+      } catch {
+        if (!disposed) setRemoteWorks([]);
+      }
+    };
+
+    void syncRemoteWorks();
+    const unsubscribe = onRemoteWorksUpdated(() => {
+      void syncRemoteWorks();
+    });
+
+    return () => {
+      disposed = true;
+      unsubscribe();
+    };
+  }, [remoteCatalogEnabled]);
+
+  const allWorks = useMemo(() => {
+    const merged = [...remoteWorks, ...customWorks, ...baseWorks];
+    const unique = new Map<string, Work>();
+
+    for (const work of merged) {
+      if (!unique.has(work.id)) {
+        unique.set(work.id, work);
+      }
+    }
+
+    return [...unique.values()];
+  }, [customWorks, remoteWorks]);
 
   const filteredWorks = useMemo(
     () =>

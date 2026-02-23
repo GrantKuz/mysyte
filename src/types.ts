@@ -1,4 +1,4 @@
-import React from 'react';
+import type { CSSProperties, DetailedHTMLProps, HTMLAttributes } from 'react';
 
 export interface WorkImage {
   renderUrl: string;
@@ -28,7 +28,7 @@ export type GalleryTab = 'props' | 'cinematics';
 declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
-      'model-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+      'model-viewer': DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> & {
         src?: string;
         alt?: string;
         'camera-controls'?: string | boolean;
@@ -36,7 +36,7 @@ declare module 'react' {
         'shadow-intensity'?: string;
         'environment-image'?: string;
         exposure?: string;
-        style?: React.CSSProperties;
+        style?: CSSProperties;
       };
     }
   }

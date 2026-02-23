@@ -7,4 +7,5 @@ coverage/
 .env
 .env*
 !.env.example
+git-sources.md
 scripts/export_git_sources_md.sh
