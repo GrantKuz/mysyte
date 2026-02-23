@@ -141,6 +141,7 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
                 src={work.videoUrl}
                 controls
                 autoPlay
+                preload="metadata"
                 onLoadedData={() => setIsVideoLoaded(true)}
                 onCanPlay={() => setIsVideoLoaded(true)}
                 onError={() => setIsVideoLoaded(true)}

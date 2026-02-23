@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Mail, Instagram, Twitter, ExternalLink, Box, Palette, Zap, Send } from 'lucide-react';
+import { Mail, Instagram, ExternalLink, Box, Palette, Zap, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -9,16 +9,18 @@ export default function Home() {
   const { t } = useLanguage();
 
   return (
-    <div className="max-w-4xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
-      <section className="flex flex-col md:flex-row gap-8 sm:gap-12 items-center mb-12 sm:mb-16">
+    <div className="max-w-5xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
+      <section className="flex flex-col md:flex-row gap-8 sm:gap-12 items-center mb-12 sm:mb-16 rounded-3xl p-5 sm:p-8 border border-white/60 dark:border-neutral-800/80 bg-white/70 dark:bg-neutral-900/60 backdrop-blur-xl shadow-xl shadow-black/5 dark:shadow-black/20">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-3xl overflow-hidden bg-neutral-200 shadow-xl relative group"
+          className="w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-3xl overflow-hidden bg-neutral-200 shadow-xl relative group ring-4 ring-white/60 dark:ring-white/10"
         >
           <img 
             src="/img/profile.png" 
             alt="Artist Profile" 
+            loading="eager"
+            decoding="async"
             className="w-full h-full object-cover group-hover:grayscale-0 transition-all duration-700"
             referrerPolicy="no-referrer"
           />
@@ -69,12 +71,12 @@ export default function Home() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="mb-12 sm:mb-16"
+        className="mb-12 sm:mb-16 rounded-3xl p-5 sm:p-7 border border-white/60 dark:border-neutral-800/80 bg-white/70 dark:bg-neutral-900/60 backdrop-blur-xl shadow-xl shadow-black/5 dark:shadow-black/20"
       >
         <h2 className="text-2xl font-bold mb-5 sm:mb-6 text-neutral-900 dark:text-white">{t('software')}</h2>
         <div className="flex flex-wrap gap-3 sm:gap-4">
           {['Blender 3D', 'Adobe Substance 3D Painter', 'Adobe Photoshop', 'ZBrush'].map((software, i) => (
-            <div key={i} className="px-4 sm:px-6 py-2.5 sm:py-3 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm text-sm sm:text-base font-medium text-neutral-800 dark:text-neutral-200">
+            <div key={i} className="px-4 sm:px-6 py-2.5 sm:py-3 bg-white/90 dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm text-sm sm:text-base font-medium text-neutral-800 dark:text-neutral-200">
               {software}
             </div>
           ))}
@@ -92,7 +94,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 + i * 0.1 }}
-            className="p-6 sm:p-8 bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow"
+            className="p-6 sm:p-8 bg-white/80 dark:bg-neutral-900/70 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-md shadow-black/5 dark:shadow-black/20 hover:-translate-y-1 hover:shadow-xl transition-all"
           >
             <div className="mb-4">{skill.icon}</div>
             <h3 className="text-lg font-bold mb-2">{skill.title}</h3>
@@ -144,7 +146,7 @@ export default function Home() {
               description: t('exp.job3.desc')
             }
           ].map((job, index) => (
-            <div key={index} className="flex flex-col md:flex-row gap-4 md:gap-8 p-5 sm:p-6 bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
+            <div key={index} className="flex flex-col md:flex-row gap-4 md:gap-8 p-5 sm:p-6 bg-white/80 dark:bg-neutral-900/70 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-md shadow-black/5 dark:shadow-black/20 hover:-translate-y-1 hover:shadow-xl transition-all">
               <div className="md:w-1/4 flex-shrink-0">
                 <p className="text-emerald-500 font-bold text-sm uppercase tracking-wider mb-1">{job.period}</p>
                 <h3 className="text-lg font-bold text-neutral-900 dark:text-white">{job.company}</h3>
