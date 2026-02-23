@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { Lock, LogOut, Plus, ShieldAlert, Trash2, Upload } from 'lucide-react';
+import { LogOut, Trash2, Upload, AlertCircle } from 'lucide-react';
 import { Work, GalleryTab } from '../types';
 import { addCustomWork, loadCustomWorks, onCustomWorksUpdated, removeCustomWork } from '../lib/workStorage';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -159,103 +159,97 @@ export default function Admin() {
     () =>
       language === 'ru'
         ? {
-            title: 'Панель управления работами',
-            subtitle: 'Добавляйте работы через сайт с загрузкой файлов.',
-            securityNote:
-              'Важно: без собственного backend абсолютной защиты не бывает. Для общего каталога используйте облачный режим.',
-            localStorageNote:
-              'Локальный режим: файлы сохраняются только в IndexedDB этого браузера, на других устройствах их не будет.',
-            remoteStorageNote:
-              'Облачный режим: работы публикуются в общем каталоге и видны всем посетителям сайта.',
-            modeLabel: 'Режим публикации',
+            title: 'Управление',
+            subtitle: 'Добавляйте и редактируйте проекты в портфолио.',
+            securityNote: 'Внимание: Без собственного Backend защиты нет. Используйте облачный режим.',
+            localStorageNote: 'Файлы сохраняются только локально в этом браузере.',
+            remoteStorageNote: 'Работы публикуются в общий облачный каталог.',
+            modeLabel: 'Режим',
             modeLocal: 'Локально',
-            modeRemote: 'Общий каталог',
-            loginTitle: 'Вход',
+            modeRemote: 'Облако',
+            loginTitle: 'Доступ',
             passwordPlaceholder: 'Пароль администратора',
             loginButton: 'Войти',
             loginError: 'Неверный пароль',
-            notConfigured: 'Пароль администратора не задан в env',
+            notConfigured: 'Пароль администратора не задан',
             logout: 'Выйти',
-            formTitle: 'Новая работа',
-            submit: 'Добавить работу',
+            formTitle: 'Новый проект',
+            submit: 'Опубликовать',
             saving: 'Сохранение...',
-            customListLocal: 'Локальные работы',
-            customListRemote: 'Опубликованные работы',
-            empty: 'Пока нет добавленных работ',
+            customListLocal: 'Локальные проекты',
+            customListRemote: 'Опубликованные проекты',
+            empty: 'Проектов пока нет',
             delete: 'Удалить',
             type: 'Тип',
             prop: 'Пропс',
             cinematic: 'Синематика',
-            thumbRequired: 'Добавьте превью: URL или файл.',
-            videoRequired: 'Для синематики добавьте видео: URL или файл.',
+            thumbRequired: 'Требуется превью: URL или файл.',
+            videoRequired: 'Для синематики требуется видео: URL или файл.',
             fields: {
               title: 'Название (EN)',
               titleRu: 'Название (RU)',
               project: 'Проект (EN)',
               projectRu: 'Проект (RU)',
-              polygons: 'Полигоны (например: 12,400)',
+              polygons: 'Полигоны (напр. 12,400)',
               description: 'Описание (EN)',
               descriptionRu: 'Описание (RU)',
-              thumbnailUrl: 'URL превью (опционально, если загружаете файл)',
-              renderUrl: 'URL рендера (опционально)',
-              wireframeUrl: 'URL wireframe (опционально)',
-              modelUrl: 'URL модели .glb (опционально)',
-              videoUrl: 'URL видео (опционально)',
-              thumbnailFile: 'Файл превью',
-              renderFile: 'Файл рендера',
-              wireframeFile: 'Файл wireframe',
-              modelFile: 'Файл .glb',
-              videoFile: 'Файл видео (mp4/webm/mov)'
+              thumbnailUrl: 'URL превью',
+              renderUrl: 'URL рендера',
+              wireframeUrl: 'URL сетки',
+              modelUrl: 'URL 3D-модели (.glb)',
+              videoUrl: 'URL видео',
+              thumbnailFile: 'Загрузить превью',
+              renderFile: 'Загрузить рендер',
+              wireframeFile: 'Загрузить сетку',
+              modelFile: 'Загрузить .glb',
+              videoFile: 'Загрузить видео'
             }
           }
         : {
-            title: 'Work Admin Panel',
-            subtitle: 'Add works through the website with direct file upload.',
-            securityNote:
-              'Important: without your own backend, protection is never absolute. Use cloud mode for shared catalog.',
-            localStorageNote:
-              'Local mode: assets are stored in this browser IndexedDB only and are not shared across devices.',
-            remoteStorageNote:
-              'Cloud mode: works are published to the shared catalog and visible to all website visitors.',
-            modeLabel: 'Publish mode',
-            modeLocal: 'Local only',
-            modeRemote: 'Shared catalog',
-            loginTitle: 'Sign in',
-            passwordPlaceholder: 'Admin password',
-            loginButton: 'Sign in',
+            title: 'Control Panel',
+            subtitle: 'Add and manage portfolio projects.',
+            securityNote: 'Warning: Absolute security requires a custom backend. Use cloud mode.',
+            localStorageNote: 'Assets are stored locally in this browser only.',
+            remoteStorageNote: 'Works are published to the public cloud catalog.',
+            modeLabel: 'Mode',
+            modeLocal: 'Local',
+            modeRemote: 'Cloud',
+            loginTitle: 'Access',
+            passwordPlaceholder: 'Admin Password',
+            loginButton: 'Sign In',
             loginError: 'Invalid password',
-            notConfigured: 'Admin password is not configured in env',
-            logout: 'Logout',
-            formTitle: 'New Work',
-            submit: 'Add Work',
+            notConfigured: 'Admin password not configured',
+            logout: 'Sign Out',
+            formTitle: 'New Project',
+            submit: 'Publish',
             saving: 'Saving...',
-            customListLocal: 'Local Works',
-            customListRemote: 'Published Works',
-            empty: 'No works yet',
+            customListLocal: 'Local Projects',
+            customListRemote: 'Published Projects',
+            empty: 'No projects yet',
             delete: 'Delete',
             type: 'Type',
             prop: 'Prop',
             cinematic: 'Cinematic',
-            thumbRequired: 'Please provide thumbnail URL or file.',
-            videoRequired: 'For cinematic, provide video URL or video file.',
+            thumbRequired: 'Thumbnail URL or file is required.',
+            videoRequired: 'Video URL or file is required for cinematics.',
             fields: {
               title: 'Title (EN)',
               titleRu: 'Title (RU)',
               project: 'Project (EN)',
               projectRu: 'Project (RU)',
-              polygons: 'Polygons (example: 12,400)',
+              polygons: 'Polygons (e.g. 12,400)',
               description: 'Description (EN)',
               descriptionRu: 'Description (RU)',
-              thumbnailUrl: 'Thumbnail URL (optional when uploading file)',
-              renderUrl: 'Render URL (optional)',
-              wireframeUrl: 'Wireframe URL (optional)',
-              modelUrl: '3D model .glb URL (optional)',
-              videoUrl: 'Video URL (optional)',
-              thumbnailFile: 'Thumbnail file',
-              renderFile: 'Render file',
-              wireframeFile: 'Wireframe file',
-              modelFile: 'Model .glb file',
-              videoFile: 'Video file (mp4/webm/mov)'
+              thumbnailUrl: 'Thumbnail URL',
+              renderUrl: 'Render URL',
+              wireframeUrl: 'Wireframe URL',
+              modelUrl: '3D Model URL (.glb)',
+              videoUrl: 'Video URL',
+              thumbnailFile: 'Upload Thumbnail',
+              renderFile: 'Upload Render',
+              wireframeFile: 'Upload Wireframe',
+              modelFile: 'Upload .glb',
+              videoFile: 'Upload Video'
             }
           },
     [language]
@@ -306,7 +300,6 @@ export default function Admin() {
           forceMimeType: 'image/webp'
         });
       }
-
       return saveAssetFromFile(file, {
         maxWidth: options.maxWidth,
         maxHeight: options.maxHeight,
@@ -315,7 +308,6 @@ export default function Admin() {
         forceMimeType: 'image/webp'
       });
     }
-
     return fallbackUrl.trim();
   };
 
@@ -436,42 +428,39 @@ export default function Admin() {
 
   if (!ADMIN_ENABLED) {
     return (
-      <div className="max-w-3xl mx-auto py-12 px-4 sm:px-6">
-        <div className="rounded-3xl p-6 sm:p-8 border border-amber-200 dark:border-amber-900/40 bg-amber-50/80 dark:bg-amber-900/20 text-amber-900 dark:text-amber-200">
-          <p className="font-semibold">
-            {language === 'ru'
-              ? 'Админ-панель отключена. Включите VITE_ENABLE_ADMIN=true в локальном окружении.'
-              : 'Admin panel is disabled. Enable VITE_ENABLE_ADMIN=true in local environment.'}
-          </p>
-        </div>
+      <div className="max-w-7xl mx-auto py-24 px-4 sm:px-8">
+        <p className="text-xl font-bold uppercase tracking-widest text-neutral-400 text-center">
+          Admin panel is disabled.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
-      <header className="mb-8 sm:mb-10 rounded-3xl p-6 sm:p-8 border border-emerald-200/50 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/90 via-teal-50/80 to-cyan-50/60 dark:from-[#142522]/80 dark:via-[#112a2a]/70 dark:to-[#102333]/60 backdrop-blur-xl">
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-neutral-900 dark:text-white">{copy.title}</h1>
-        <p className="text-neutral-600 dark:text-neutral-300 mt-2">{copy.subtitle}</p>
+    <div className="max-w-7xl mx-auto py-12 md:py-24 px-4 sm:px-8">
+      <header className="mb-16 md:mb-24">
+        <h1 className="text-5xl sm:text-7xl font-bold tracking-tighter uppercase text-neutral-900 dark:text-white mb-6">
+          {copy.title}
+        </h1>
+        <p className="text-lg md:text-xl text-neutral-500 font-medium max-w-2xl mb-12">
+          {copy.subtitle}
+        </p>
 
-        <div className="mt-4 flex items-start gap-2 text-xs sm:text-sm text-amber-700 dark:text-amber-300 bg-amber-100/80 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/40 rounded-2xl p-3">
-          <ShieldAlert size={16} className="mt-0.5 shrink-0" />
-          <span>{copy.securityNote}</span>
-        </div>
+        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center border-b border-neutral-200 dark:border-neutral-800 pb-12">
+          <div className="flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-widest font-bold text-neutral-500 border border-neutral-200 dark:border-neutral-800 px-4 py-3">
+            <AlertCircle size={16} strokeWidth={1.5} />
+            {copy.securityNote}
+          </div>
 
-        {remoteEnabled && (
-          <div className="mt-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-2">
-              {copy.modeLabel}
-            </p>
-            <div className="inline-flex p-1 rounded-xl bg-white/70 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800">
+          {remoteEnabled && (
+            <div className="flex items-center border border-neutral-200 dark:border-neutral-800 p-1">
               <button
                 type="button"
                 onClick={() => setPublishMode('local')}
-                className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg font-semibold transition-colors ${
+                className={`px-6 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-colors ${
                   publishMode === 'local'
-                    ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm'
-                    : 'text-neutral-600 dark:text-neutral-300'
+                    ? 'bg-neutral-900 text-white dark:bg-white dark:text-black'
+                    : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                 }`}
               >
                 {copy.modeLocal}
@@ -479,93 +468,87 @@ export default function Admin() {
               <button
                 type="button"
                 onClick={() => setPublishMode('remote')}
-                className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg font-semibold transition-colors ${
+                className={`px-6 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-colors ${
                   publishMode === 'remote'
-                    ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm'
-                    : 'text-neutral-600 dark:text-neutral-300'
+                    ? 'bg-neutral-900 text-white dark:bg-white dark:text-black'
+                    : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                 }`}
               >
                 {copy.modeRemote}
               </button>
             </div>
-          </div>
-        )}
-
-        <div className="mt-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 bg-white/70 dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-3">
-          {publishMode === 'remote' && remoteEnabled ? copy.remoteStorageNote : copy.localStorageNote}
+          )}
         </div>
       </header>
 
       {!isUnlocked ? (
-        <form
-          onSubmit={handleLogin}
-          className="max-w-md rounded-3xl border border-neutral-200 dark:border-neutral-800 p-6 sm:p-8 bg-white/90 dark:bg-neutral-900/80 backdrop-blur-xl shadow-xl"
-        >
-          <h2 className="text-xl font-bold mb-4 text-neutral-900 dark:text-white">{copy.loginTitle}</h2>
-          <div className="relative">
-            <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder={copy.passwordPlaceholder}
-              className="w-full pl-9 pr-3 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
-              required
-            />
-          </div>
-          {authError && <p className="mt-3 text-sm text-rose-500">{authError}</p>}
+        <form onSubmit={handleLogin} className="max-w-md border border-neutral-200 dark:border-neutral-800 p-8 sm:p-12">
+          <h2 className="text-2xl font-bold uppercase tracking-tight mb-8 text-neutral-900 dark:text-white">
+            {copy.loginTitle}
+          </h2>
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder={copy.passwordPlaceholder}
+            className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-4 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none mb-8"
+            required
+          />
+          {authError && <p className="mb-6 text-xs uppercase tracking-widest font-bold text-rose-500">{authError}</p>}
           <button
             type="submit"
-            className="mt-5 w-full py-3 rounded-xl font-bold bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+            className="w-full py-4 bg-neutral-900 text-white dark:bg-white dark:text-black text-sm uppercase tracking-widest font-bold hover:opacity-80 transition-opacity"
           >
             {copy.loginButton}
           </button>
         </form>
       ) : (
-        <div className="grid lg:grid-cols-[1.2fr,0.8fr] gap-6">
-          <div className="rounded-3xl border border-neutral-200 dark:border-neutral-800 p-5 sm:p-7 bg-white/90 dark:bg-neutral-900/80 backdrop-blur-xl shadow-xl">
-            <div className="flex items-center justify-between gap-3 mb-5">
-              <h2 className="text-xl font-bold text-neutral-900 dark:text-white">{copy.formTitle}</h2>
+        <div className="grid lg:grid-cols-[1.5fr,1fr] gap-16 lg:gap-24">
+          <div>
+            <div className="flex items-center justify-between mb-12 pb-6 border-b border-neutral-200 dark:border-neutral-800">
+              <h2 className="text-3xl font-bold uppercase tracking-tight text-neutral-900 dark:text-white">
+                {copy.formTitle}
+              </h2>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="inline-flex items-center gap-2 text-xs font-bold px-3 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
               >
-                <LogOut size={14} />
+                <LogOut size={14} strokeWidth={2} />
                 {copy.logout}
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="grid sm:grid-cols-2 gap-3">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid sm:grid-cols-2 gap-8">
                 <input
                   value={form.title}
                   onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
                   placeholder={copy.fields.title}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+                  className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none"
                   required
                 />
                 <input
                   value={form.titleRu}
                   onChange={(event) => setForm((prev) => ({ ...prev, titleRu: event.target.value }))}
                   placeholder={copy.fields.titleRu}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+                  className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none"
                 />
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-3">
+              <div className="grid sm:grid-cols-2 gap-8">
                 <input
                   value={form.project}
                   onChange={(event) => setForm((prev) => ({ ...prev, project: event.target.value }))}
                   placeholder={copy.fields.project}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+                  className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none"
                   required
                 />
                 <input
                   value={form.projectRu}
                   onChange={(event) => setForm((prev) => ({ ...prev, projectRu: event.target.value }))}
                   placeholder={copy.fields.projectRu}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+                  className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none"
                 />
               </div>
 
@@ -573,144 +556,138 @@ export default function Admin() {
                 value={form.polygons}
                 onChange={(event) => setForm((prev) => ({ ...prev, polygons: event.target.value }))}
                 placeholder={copy.fields.polygons}
-                className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+                className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none"
               />
 
-              <textarea
-                value={form.description}
-                onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
-                placeholder={copy.fields.description}
-                className="w-full px-3 py-2.5 min-h-[90px] rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
-                required
-              />
-              <textarea
-                value={form.descriptionRu}
-                onChange={(event) => setForm((prev) => ({ ...prev, descriptionRu: event.target.value }))}
-                placeholder={copy.fields.descriptionRu}
-                className="w-full px-3 py-2.5 min-h-[90px] rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
-              />
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <input
-                  value={form.thumbnail}
-                  onChange={(event) => setForm((prev) => ({ ...prev, thumbnail: event.target.value }))}
-                  placeholder={copy.fields.thumbnailUrl}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+              <div className="grid sm:grid-cols-2 gap-8">
+                <textarea
+                  value={form.description}
+                  onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
+                  placeholder={copy.fields.description}
+                  className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 min-h-[100px] text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none resize-y"
+                  required
                 />
-                <label className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-600 dark:text-neutral-300 cursor-pointer">
+                <textarea
+                  value={form.descriptionRu}
+                  onChange={(event) => setForm((prev) => ({ ...prev, descriptionRu: event.target.value }))}
+                  placeholder={copy.fields.descriptionRu}
+                  className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 min-h-[100px] text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none resize-y"
+                />
+              </div>
+
+              {/* Uploads Grid */}
+              <div className="space-y-4 pt-4">
+                <div className="grid sm:grid-cols-2 gap-4">
                   <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(event) => setUploadFile('thumbnail', event.target.files)}
+                    value={form.thumbnail}
+                    onChange={(event) => setForm((prev) => ({ ...prev, thumbnail: event.target.value }))}
+                    placeholder={copy.fields.thumbnailUrl}
+                    className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none text-sm"
                   />
-                  {uploads.thumbnail ? uploads.thumbnail.name : copy.fields.thumbnailFile}
+                  <label className="w-full flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors">
+                    <span className="text-[10px] sm:text-xs uppercase tracking-widest font-bold text-neutral-500 truncate pr-4">
+                      {uploads.thumbnail ? uploads.thumbnail.name : copy.fields.thumbnailFile}
+                    </span>
+                    <Upload size={16} strokeWidth={1.5} className="text-neutral-400 shrink-0" />
+                    <input type="file" accept="image/*" className="hidden" onChange={(event) => setUploadFile('thumbnail', event.target.files)} />
+                  </label>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <input
+                    value={form.renderUrl}
+                    onChange={(event) => setForm((prev) => ({ ...prev, renderUrl: event.target.value }))}
+                    placeholder={copy.fields.renderUrl}
+                    className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none text-sm"
+                  />
+                  <label className="w-full flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors">
+                    <span className="text-[10px] sm:text-xs uppercase tracking-widest font-bold text-neutral-500 truncate pr-4">
+                      {uploads.render ? uploads.render.name : copy.fields.renderFile}
+                    </span>
+                    <Upload size={16} strokeWidth={1.5} className="text-neutral-400 shrink-0" />
+                    <input type="file" accept="image/*" className="hidden" onChange={(event) => setUploadFile('render', event.target.files)} />
+                  </label>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <input
+                    value={form.wireframeUrl}
+                    onChange={(event) => setForm((prev) => ({ ...prev, wireframeUrl: event.target.value }))}
+                    placeholder={copy.fields.wireframeUrl}
+                    className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none text-sm"
+                  />
+                  <label className="w-full flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors">
+                    <span className="text-[10px] sm:text-xs uppercase tracking-widest font-bold text-neutral-500 truncate pr-4">
+                      {uploads.wireframe ? uploads.wireframe.name : copy.fields.wireframeFile}
+                    </span>
+                    <Upload size={16} strokeWidth={1.5} className="text-neutral-400 shrink-0" />
+                    <input type="file" accept="image/*" className="hidden" onChange={(event) => setUploadFile('wireframe', event.target.files)} />
+                  </label>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <input
+                    value={form.modelUrl}
+                    onChange={(event) => setForm((prev) => ({ ...prev, modelUrl: event.target.value }))}
+                    placeholder={copy.fields.modelUrl}
+                    className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none text-sm"
+                  />
+                  <label className="w-full flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors">
+                    <span className="text-[10px] sm:text-xs uppercase tracking-widest font-bold text-neutral-500 truncate pr-4">
+                      {uploads.model ? uploads.model.name : copy.fields.modelFile}
+                    </span>
+                    <Upload size={16} strokeWidth={1.5} className="text-neutral-400 shrink-0" />
+                    <input type="file" accept=".glb,model/gltf-binary" className="hidden" onChange={(event) => setUploadFile('model', event.target.files)} />
+                  </label>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="relative">
+                    <select
+                      value={form.type}
+                      onChange={(event) => setForm((prev) => ({ ...prev, type: event.target.value as GalleryTab }))}
+                      className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white outline-none focus:border-neutral-900 dark:focus:border-white transition-colors rounded-none cursor-pointer appearance-none text-sm uppercase tracking-widest font-bold"
+                    >
+                      <option value="props" className="text-black dark:text-black">{copy.prop}</option>
+                      <option value="cinematics" className="text-black dark:text-black">{copy.cinematic}</option>
+                    </select>
+                  </div>
+                  <input
+                    value={form.videoUrl}
+                    onChange={(event) => setForm((prev) => ({ ...prev, videoUrl: event.target.value }))}
+                    placeholder={copy.fields.videoUrl}
+                    className="w-full bg-transparent border-b border-neutral-200 dark:border-neutral-800 py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:border-neutral-900 dark:focus:border-white outline-none transition-colors rounded-none text-sm"
+                  />
+                </div>
+
+                <label className="w-full flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors mt-4">
+                  <span className="text-[10px] sm:text-xs uppercase tracking-widest font-bold text-neutral-500 truncate pr-4">
+                    {uploads.video ? uploads.video.name : copy.fields.videoFile}
+                  </span>
+                  <Upload size={16} strokeWidth={1.5} className="text-neutral-400 shrink-0" />
+                  <input type="file" accept="video/mp4,video/webm,video/quicktime,video/*" className="hidden" onChange={(event) => setUploadFile('video', event.target.files)} />
                 </label>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-3">
-                <input
-                  value={form.renderUrl}
-                  onChange={(event) => setForm((prev) => ({ ...prev, renderUrl: event.target.value }))}
-                  placeholder={copy.fields.renderUrl}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
-                />
-                <label className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-600 dark:text-neutral-300 cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(event) => setUploadFile('render', event.target.files)}
-                  />
-                  {uploads.render ? uploads.render.name : copy.fields.renderFile}
-                </label>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <input
-                  value={form.wireframeUrl}
-                  onChange={(event) => setForm((prev) => ({ ...prev, wireframeUrl: event.target.value }))}
-                  placeholder={copy.fields.wireframeUrl}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
-                />
-                <label className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-600 dark:text-neutral-300 cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(event) => setUploadFile('wireframe', event.target.files)}
-                  />
-                  {uploads.wireframe ? uploads.wireframe.name : copy.fields.wireframeFile}
-                </label>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <input
-                  value={form.modelUrl}
-                  onChange={(event) => setForm((prev) => ({ ...prev, modelUrl: event.target.value }))}
-                  placeholder={copy.fields.modelUrl}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
-                />
-                <label className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-600 dark:text-neutral-300 cursor-pointer">
-                  <input
-                    type="file"
-                    accept=".glb,model/gltf-binary"
-                    className="hidden"
-                    onChange={(event) => setUploadFile('model', event.target.files)}
-                  />
-                  {uploads.model ? uploads.model.name : copy.fields.modelFile}
-                </label>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <select
-                  value={form.type}
-                  onChange={(event) =>
-                    setForm((prev) => ({ ...prev, type: event.target.value as GalleryTab }))
-                  }
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
-                >
-                  <option value="props">{copy.type}: {copy.prop}</option>
-                  <option value="cinematics">{copy.type}: {copy.cinematic}</option>
-                </select>
-                <input
-                  value={form.videoUrl}
-                  onChange={(event) => setForm((prev) => ({ ...prev, videoUrl: event.target.value }))}
-                  placeholder={copy.fields.videoUrl}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
-                />
-              </div>
-
-              <label className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-600 dark:text-neutral-300 cursor-pointer block">
-                <input
-                  type="file"
-                  accept="video/mp4,video/webm,video/quicktime,video/*"
-                  className="hidden"
-                  onChange={(event) => setUploadFile('video', event.target.files)}
-                />
-                {uploads.video ? uploads.video.name : copy.fields.videoFile}
-              </label>
-
-              {submitError && <p className="text-sm text-rose-500">{submitError}</p>}
+              {submitError && <p className="text-xs uppercase tracking-widest font-bold text-rose-500">{submitError}</p>}
 
               <button
                 type="submit"
                 disabled={isSaving}
-                className="w-full mt-3 py-3 rounded-xl font-bold bg-emerald-500 hover:bg-emerald-400 text-white inline-flex items-center justify-center gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full mt-8 py-5 bg-neutral-900 text-white dark:bg-white dark:text-black text-sm uppercase tracking-widest font-bold hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSaving ? <Upload size={16} className="animate-pulse" /> : <Plus size={16} />}
                 {isSaving ? copy.saving : copy.submit}
               </button>
             </form>
           </div>
 
-          <aside className="rounded-3xl border border-neutral-200 dark:border-neutral-800 p-5 sm:p-7 bg-white/90 dark:bg-neutral-900/80 backdrop-blur-xl shadow-xl">
-            <h2 className="text-xl font-bold mb-4 text-neutral-900 dark:text-white">
+          <aside>
+            <h2 className="text-2xl font-bold uppercase tracking-tight mb-12 pb-6 border-b border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white">
               {publishMode === 'remote' && remoteEnabled ? copy.customListRemote : copy.customListLocal}
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {works.length === 0 && (
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">{copy.empty}</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-neutral-400">{copy.empty}</p>
               )}
               {works.map((work) => {
                 const workTitle = language === 'ru' ? work.titleRu ?? work.title : work.title;
@@ -719,17 +696,18 @@ export default function Admin() {
                 return (
                   <div
                     key={work.id}
-                    className="p-3 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-900/70"
+                    className="p-4 border border-neutral-200 dark:border-neutral-800 flex justify-between items-center group hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
                   >
-                    <p className="font-bold text-sm text-neutral-900 dark:text-white">{workTitle}</p>
-                    <p className="text-xs text-neutral-500 mt-0.5">{workProject}</p>
+                    <div className="truncate pr-4">
+                      <p className="font-bold text-sm uppercase tracking-tight text-neutral-900 dark:text-white truncate">{workTitle}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mt-1 truncate">{workProject}</p>
+                    </div>
                     <button
                       type="button"
                       onClick={() => void handleDelete(work.id)}
-                      className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-rose-500 hover:text-rose-400"
+                      className="p-2 text-neutral-400 hover:text-rose-500 transition-colors shrink-0"
                     >
-                      <Trash2 size={13} />
-                      {copy.delete}
+                      <Trash2 size={16} strokeWidth={1.5} />
                     </button>
                   </div>
                 );

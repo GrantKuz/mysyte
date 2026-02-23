@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Box, Layers, Info, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Work } from '../types';
-import { useEffect, useState, type MouseEvent } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import ThreeViewer from './ThreeViewer';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -22,7 +22,11 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
   const [view3D, setView3D] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
   const [isRenderLoaded, setIsRenderLoaded] = useState(false);
+  const [isRenderFailed, setIsRenderFailed] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [isVideoFailed, setIsVideoFailed] = useState(false);
+  const renderImageRef = useRef<HTMLImageElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const { language, t } = useLanguage();
 
   const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -39,9 +43,17 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
   const showVideo = work.type === 'cinematic' && Boolean(work.videoUrl);
   const showRenderImage = !view3D && !showVideo;
 
-  const { url: renderSrc, isResolving: renderResolving } = useAssetUrl(currentImage.renderUrl);
+  const {
+    url: renderSrc,
+    isResolving: renderResolving,
+    error: renderResolveError
+  } = useAssetUrl(currentImage.renderUrl);
   const { url: wireframeSrc, isResolving: wireframeResolving } = useAssetUrl(currentImage.wireframeUrl);
-  const { url: videoSrc, isResolving: videoResolving } = useAssetUrl(showVideo ? work.videoUrl : undefined);
+  const {
+    url: videoSrc,
+    isResolving: videoResolving,
+    error: videoResolveError
+  } = useAssetUrl(showVideo ? work.videoUrl : undefined);
   const { url: modelSrc, isResolving: modelResolving } = useAssetUrl(work.modelUrl);
 
   useEffect(() => {
@@ -49,15 +61,51 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
     setShowWireframe(false);
     setView3D(false);
     setIsRenderLoaded(false);
+    setIsRenderFailed(false);
     setIsVideoLoaded(false);
+    setIsVideoFailed(false);
   }, [work.id]);
 
   useEffect(() => {
     setIsRenderLoaded(false);
+    setIsRenderFailed(false);
+
+    const rafId = requestAnimationFrame(() => {
+      const image = renderImageRef.current;
+      if (!image || !renderSrc) return;
+
+      if (image.complete) {
+        if (image.naturalWidth > 0) {
+          setIsRenderLoaded(true);
+        } else {
+          setIsRenderFailed(true);
+        }
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
   }, [renderSrc, imageIndex, work.id]);
 
   useEffect(() => {
     setIsVideoLoaded(false);
+    setIsVideoFailed(false);
+
+    const rafId = requestAnimationFrame(() => {
+      const video = videoRef.current;
+      if (!video || !videoSrc) return;
+
+      if (video.readyState >= 2) {
+        setIsVideoLoaded(true);
+      } else if (video.error) {
+        setIsVideoFailed(true);
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
   }, [videoSrc, work.id]);
 
   const handleNext = (event: MouseEvent) => {
@@ -72,8 +120,17 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
     setShowWireframe(false);
   };
 
-  const showRenderLoader = showRenderImage && (renderResolving || !renderSrc || !isRenderLoaded);
-  const showVideoLoader = showVideo && (videoResolving || !videoSrc || !isVideoLoaded);
+  const hasRenderSource = Boolean(renderSrc);
+  const showRenderLoader =
+    showRenderImage && (renderResolving || (hasRenderSource && !isRenderLoaded && !isRenderFailed));
+  const showRenderFallback =
+    showRenderImage && !showRenderLoader && (!hasRenderSource || isRenderFailed || Boolean(renderResolveError));
+
+  const hasVideoSource = Boolean(videoSrc);
+  const showVideoLoader =
+    showVideo && (videoResolving || (hasVideoSource && !isVideoLoaded && !isVideoFailed));
+  const showVideoFallback =
+    showVideo && !showVideoLoader && (!hasVideoSource || isVideoFailed || Boolean(videoResolveError));
 
   return (
     <motion.div
@@ -89,7 +146,7 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.98, opacity: 0, y: 20 }}
         transition={{ duration: 0.8, ease }}
-        className="bg-white dark:bg-[#0a0a0a] w-full h-full max-w-[1400px] flex flex-col md:flex-row shadow-2xl overflow-hidden border border-neutral-200 dark:border-neutral-900"
+        className="relative bg-white dark:bg-[#0a0a0a] w-full h-full md:h-[calc(100vh-4rem)] max-w-[1400px] flex flex-col md:flex-row shadow-2xl overflow-hidden border border-neutral-200 dark:border-neutral-900 md:rounded-3xl"
         onClick={(event) => event.stopPropagation()}
       >
         <button
@@ -99,119 +156,148 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
           <X size={32} strokeWidth={1} />
         </button>
 
-        <div className="flex-1 bg-neutral-100 dark:bg-[#050505] relative group min-h-[40vh] md:min-h-0 flex items-center justify-center overflow-hidden">
-          {renderSrc && (
-            <img
-              key={`render-${imageIndex}`}
-              src={renderSrc}
-              alt={title}
-              draggable={false}
-              onLoad={() => setIsRenderLoaded(true)}
-              onError={() => setIsRenderLoaded(true)}
-              onDragStart={(event) => event.preventDefault()}
-              onContextMenu={(event) => event.preventDefault()}
-              className={cn(
-                'w-full h-full object-contain transition-opacity duration-700',
-                showRenderImage && !showRenderLoader ? 'opacity-100' : 'opacity-0'
-              )}
-              referrerPolicy="no-referrer"
-            />
-          )}
-
-          {showRenderLoader && (
-            <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
-              <p className="text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">{t('common.loading')}</p>
-            </div>
-          )}
-
-          <AnimatePresence>
-            {showWireframe && wireframeSrc && !wireframeResolving && !view3D && work.type !== 'cinematic' && (
-              <motion.img
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5, ease }}
-                src={wireframeSrc}
-                alt={t('modal.wireframe.alt')}
+        <div className="flex-1 bg-neutral-100 dark:bg-[#050505] relative min-h-[40vh] md:min-h-0 p-2 sm:p-3 md:p-5 lg:p-6">
+          <div className="relative w-full h-full rounded-xl sm:rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-neutral-200/60 dark:bg-neutral-950 overflow-hidden">
+            {renderSrc && (
+              <img
+                key={`render-${imageIndex}`}
+                ref={renderImageRef}
+                src={renderSrc}
+                alt={title}
                 draggable={false}
+                onLoad={() => {
+                  setIsRenderFailed(false);
+                  setIsRenderLoaded(true);
+                }}
+                onError={() => {
+                  setIsRenderFailed(true);
+                  setIsRenderLoaded(true);
+                }}
                 onDragStart={(event) => event.preventDefault()}
                 onContextMenu={(event) => event.preventDefault()}
-                className="absolute inset-0 w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen pointer-events-none"
+                className={cn(
+                  'w-full h-full object-contain p-2 sm:p-3 md:p-4 transition-opacity duration-700',
+                  showRenderImage && !showRenderLoader && !showRenderFallback ? 'opacity-100' : 'opacity-0'
+                )}
                 referrerPolicy="no-referrer"
               />
             )}
-          </AnimatePresence>
 
-          <AnimatePresence>
-            {view3D && (
-              <motion.div
-                key="3d"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5, ease }}
-                className="absolute inset-0 w-full h-full"
-              >
-                {modelSrc && !modelResolving ? (
-                  <ThreeViewer modelUrl={modelSrc} />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-400">
+            {showRenderLoader && (
+              <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
+                <p className="text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">{t('common.loading')}</p>
+              </div>
+            )}
+
+            {showRenderFallback && (
+              <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
+                <div className="w-12 h-12 rounded-full border border-neutral-300 dark:border-neutral-700" />
+              </div>
+            )}
+
+            <AnimatePresence>
+              {showWireframe && wireframeSrc && !wireframeResolving && !view3D && work.type !== 'cinematic' && (
+                <motion.img
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5, ease }}
+                  src={wireframeSrc}
+                  alt={t('modal.wireframe.alt')}
+                  draggable={false}
+                  onDragStart={(event) => event.preventDefault()}
+                  onContextMenu={(event) => event.preventDefault()}
+                  className="absolute inset-0 w-full h-full object-contain p-2 sm:p-3 md:p-4 mix-blend-multiply dark:mix-blend-screen pointer-events-none"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {view3D && (
+                <motion.div
+                  key="3d"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5, ease }}
+                  className="absolute inset-0 w-full h-full"
+                >
+                  {modelSrc && !modelResolving ? (
+                    <ThreeViewer modelUrl={modelSrc} />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-neutral-400">
+                      <p className="text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">{t('common.loading')}</p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {showVideo && (
+              <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
+                {showVideoLoader && (
+                  <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
                     <p className="text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">{t('common.loading')}</p>
                   </div>
                 )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {showVideo && (
-            <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
-              {showVideoLoader && (
-                <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
-                  <p className="text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">{t('common.loading')}</p>
-                </div>
-              )}
-              {videoSrc && (
-                <video
-                  src={videoSrc}
-                  controls
-                  autoPlay
-                  preload="metadata"
-                  controlsList="nodownload noremoteplayback"
-                  disablePictureInPicture
-                  onLoadedData={() => setIsVideoLoaded(true)}
-                  onCanPlay={() => setIsVideoLoaded(true)}
-                  onError={() => setIsVideoLoaded(true)}
-                  onContextMenu={(event) => event.preventDefault()}
-                  className={cn(
-                    'max-w-full max-h-full transition-opacity duration-700',
-                    !showVideoLoader ? 'opacity-100' : 'opacity-0'
-                  )}
-                />
-              )}
-            </div>
-          )}
-
-          {images.length > 1 && !view3D && work.type !== 'cinematic' && (
-            <>
-              <button
-                onClick={handlePrev}
-                className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
-              >
-                <ChevronLeft size={32} strokeWidth={1} />
-              </button>
-              <button
-                onClick={handleNext}
-                className="absolute right-6 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
-              >
-                <ChevronRight size={32} strokeWidth={1} />
-              </button>
-              <div className="absolute bottom-8 right-8 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-                {imageIndex + 1} / {images.length}
+                {showVideoFallback && (
+                  <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
+                    <div className="w-12 h-12 rounded-full border border-neutral-600/80" />
+                  </div>
+                )}
+                {videoSrc && (
+                  <video
+                    ref={videoRef}
+                    src={videoSrc}
+                    controls
+                    autoPlay
+                    preload="metadata"
+                    controlsList="nodownload noremoteplayback"
+                    disablePictureInPicture
+                    onLoadedData={() => {
+                      setIsVideoFailed(false);
+                      setIsVideoLoaded(true);
+                    }}
+                    onCanPlay={() => {
+                      setIsVideoFailed(false);
+                      setIsVideoLoaded(true);
+                    }}
+                    onError={() => {
+                      setIsVideoFailed(true);
+                      setIsVideoLoaded(true);
+                    }}
+                    onContextMenu={(event) => event.preventDefault()}
+                    className={cn(
+                      'w-full h-full object-contain p-2 sm:p-3 md:p-4 transition-opacity duration-700',
+                      !showVideoLoader && !showVideoFallback ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                )}
               </div>
-            </>
-          )}
+            )}
 
-          <div className="absolute bottom-6 left-6 flex flex-wrap gap-4 z-10">
+            {images.length > 1 && !view3D && work.type !== 'cinematic' && (
+              <>
+                <button
+                  onClick={handlePrev}
+                  className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors p-1.5 rounded-full bg-white/65 dark:bg-black/45 backdrop-blur-sm"
+                >
+                  <ChevronLeft size={26} strokeWidth={1.4} />
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors p-1.5 rounded-full bg-white/65 dark:bg-black/45 backdrop-blur-sm"
+                >
+                  <ChevronRight size={26} strokeWidth={1.4} />
+                </button>
+                <div className="absolute bottom-4 right-4 text-[10px] font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
+                  {imageIndex + 1} / {images.length}
+                </div>
+              </>
+            )}
+
+            <div className="absolute bottom-4 left-4 flex flex-wrap gap-3 z-10">
             {currentImage.wireframeUrl && !view3D && work.type !== 'cinematic' && (
               <button
                 onClick={() => setShowWireframe(!showWireframe)}
@@ -240,6 +326,7 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
                 {view3D ? t('modal.3d.hide') : t('modal.3d.show')}
               </button>
             )}
+            </div>
           </div>
         </div>
 

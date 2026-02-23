@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Work } from '../types';
 import { Play } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -18,16 +18,38 @@ interface GalleryCardProps {
 
 function GalleryCard({ work, index, onWorkClick }: GalleryCardProps) {
   const { language, t } = useLanguage();
-  const { url: thumbnailUrl, isResolving } = useAssetUrl(work.thumbnail);
+  const { url: thumbnailUrl, isResolving, error } = useAssetUrl(work.thumbnail);
+  const imageRef = useRef<HTMLImageElement | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isFailed, setIsFailed] = useState(false);
 
   useEffect(() => {
     setIsLoaded(false);
+    setIsFailed(false);
+
+    const rafId = requestAnimationFrame(() => {
+      const image = imageRef.current;
+      if (!image || !thumbnailUrl) return;
+
+      if (image.complete) {
+        if (image.naturalWidth > 0) {
+          setIsLoaded(true);
+        } else {
+          setIsFailed(true);
+        }
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
   }, [thumbnailUrl, work.id]);
 
   const title = language === 'ru' ? work.titleRu ?? work.title : work.title;
   const project = language === 'ru' ? work.projectRu ?? work.project : work.project;
-  const showLoader = isResolving || !thumbnailUrl || !isLoaded;
+  const hasImageSource = Boolean(thumbnailUrl);
+  const showLoader = isResolving || (hasImageSource && !isLoaded && !isFailed);
+  const showFallback = !showLoader && (!hasImageSource || isFailed || Boolean(error));
 
   return (
     <motion.div
@@ -40,17 +62,21 @@ function GalleryCard({ work, index, onWorkClick }: GalleryCardProps) {
     >
       {thumbnailUrl && (
         <img
+          ref={imageRef}
           src={thumbnailUrl}
           alt={title}
           draggable={false}
           loading="lazy"
           decoding="async"
           onLoad={() => setIsLoaded(true)}
-          onError={() => setIsLoaded(true)}
+          onError={() => {
+            setIsFailed(true);
+            setIsLoaded(true);
+          }}
           onDragStart={(event) => event.preventDefault()}
           onContextMenu={(event) => event.preventDefault()}
           className={`w-full h-full object-cover transition-all duration-1000 ${
-            !showLoader ? 'opacity-100 scale-100 group-hover:scale-105' : 'opacity-0 scale-110'
+            !showLoader && !showFallback ? 'opacity-100 scale-100 group-hover:scale-105' : 'opacity-0 scale-110'
           }`}
           referrerPolicy="no-referrer"
         />
@@ -59,6 +85,12 @@ function GalleryCard({ work, index, onWorkClick }: GalleryCardProps) {
       {showLoader && (
         <div className="absolute inset-0 flex items-center justify-center text-neutral-400 bg-neutral-100 dark:bg-neutral-900">
            <p className="text-[10px] uppercase tracking-[0.2em] font-bold animate-pulse">{t('common.loading')}</p>
+        </div>
+      )}
+
+      {showFallback && (
+        <div className="absolute inset-0 flex items-center justify-center text-neutral-400 bg-neutral-100 dark:bg-neutral-900">
+          <div className="w-10 h-10 rounded-full border border-neutral-300 dark:border-neutral-700" />
         </div>
       )}
 

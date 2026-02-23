@@ -8,7 +8,6 @@ export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const { t } = useLanguage();
 
-  // Жестко задаем тип кортежа (Tuple), чтобы TS не ругался на Easing
   const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
   const jobs = [
@@ -81,7 +80,7 @@ export default function Home() {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-            className="w-full lg:w-[420px] aspect-[4/5] bg-neutral-200 dark:bg-neutral-900 relative order-1 lg:order-2 will-change-transform cursor-pointer"
+            className="w-full lg:w-[420px] aspect-[4/5] bg-neutral-200 dark:bg-neutral-900 relative order-1 lg:order-2 will-change-transform"
           >
             <motion.div 
               className="absolute inset-0 bg-black/20 dark:bg-black/40 blur-xl -z-10"
@@ -172,7 +171,7 @@ export default function Home() {
           <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold text-neutral-400 mb-16">{t('exp.title')}</h2>
           <div className="flex flex-col border-t border-neutral-200 dark:border-neutral-800">
             {jobs.map((job, i) => (
-              <div key={i} className="py-12 border-b border-neutral-200 dark:border-neutral-800 flex flex-col md:flex-row md:items-start gap-6 md:gap-16 group transition-all duration-500 cursor-default relative overflow-hidden">
+              <div key={i} className="py-12 border-b border-neutral-200 dark:border-neutral-800 flex flex-col md:flex-row md:items-start gap-6 md:gap-16 group transition-all duration-500 relative overflow-hidden">
                 <div className="absolute inset-0 bg-neutral-100 dark:bg-neutral-900/50 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.16,1,0.3,1] -z-10" />
                 <div className="w-full md:w-1/3 shrink-0 relative z-10 px-4">
                   <p className="text-xs font-mono font-bold text-neutral-400 mb-3">{job.period}</p>
