@@ -9,12 +9,12 @@ export default function Home() {
   const { t } = useLanguage();
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-6">
-      <section className="flex flex-col md:flex-row gap-12 items-center mb-16">
+    <div className="max-w-4xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
+      <section className="flex flex-col md:flex-row gap-8 sm:gap-12 items-center mb-12 sm:mb-16">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-48 h-48 md:w-64 md:h-64 rounded-3xl overflow-hidden bg-neutral-200 shadow-xl relative group"
+          className="w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-3xl overflow-hidden bg-neutral-200 shadow-xl relative group"
         >
           <img 
             src="/img/profile.png" 
@@ -29,16 +29,16 @@ export default function Home() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl font-bold text-neutral-900 dark:text-white mb-4 tracking-tight flex items-baseline justify-center md:justify-start gap-4"
+            className="text-3xl sm:text-5xl font-bold text-neutral-900 dark:text-white mb-3 sm:mb-4 tracking-tight flex flex-col sm:flex-row items-center sm:items-baseline justify-center md:justify-start gap-1 sm:gap-4"
           >
             <span>Gleb <span className="text-emerald-500">Kuzn</span></span>
-            <span className="text-2xl font-medium text-[#a1a1a1]">21 y.o.</span>
+            <span className="text-lg sm:text-2xl font-medium text-[#a1a1a1]">{t('home.age')}</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-xl text-neutral-600 dark:text-neutral-400 mb-8 font-medium"
+            className="text-base sm:text-xl text-neutral-600 dark:text-neutral-400 mb-6 sm:mb-8 font-medium"
           >
             {t('role')}
           </motion.p>
@@ -47,17 +47,17 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-wrap gap-4 justify-center md:justify-start"
+            className="flex flex-wrap gap-3 sm:gap-4 justify-center md:justify-start"
           >
             <Link 
               to="/gallery" 
-              className="px-8 py-3 bg-neutral-900 dark:bg-white dark:text-neutral-900 text-white rounded-2xl font-bold hover:scale-105 transition-transform shadow-lg shadow-neutral-900/20"
+              className="w-full sm:w-auto text-center px-6 sm:px-8 py-3 bg-neutral-900 dark:bg-white dark:text-neutral-900 text-white rounded-2xl font-bold hover:scale-105 transition-transform shadow-lg shadow-neutral-900/20"
             >
               {t('viewWorks')}
             </Link>
             <button 
               onClick={() => setIsContactOpen(true)}
-              className="px-8 py-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-2xl font-bold hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-2xl font-bold hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
             >
               {t('getInTouch')}
             </button>
@@ -69,19 +69,19 @@ export default function Home() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="mb-16"
+        className="mb-12 sm:mb-16"
       >
-        <h2 className="text-2xl font-bold mb-6 text-neutral-900 dark:text-white">{t('software')}</h2>
-        <div className="flex flex-wrap gap-4">
+        <h2 className="text-2xl font-bold mb-5 sm:mb-6 text-neutral-900 dark:text-white">{t('software')}</h2>
+        <div className="flex flex-wrap gap-3 sm:gap-4">
           {['Blender 3D', 'Adobe Substance 3D Painter', 'Adobe Photoshop', 'ZBrush'].map((software, i) => (
-            <div key={i} className="px-6 py-3 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm font-medium text-neutral-800 dark:text-neutral-200">
+            <div key={i} className="px-4 sm:px-6 py-2.5 sm:py-3 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm text-sm sm:text-base font-medium text-neutral-800 dark:text-neutral-200">
               {software}
             </div>
           ))}
         </div>
       </motion.section>
 
-      <div className="grid md:grid-cols-3 gap-8 mb-16">
+      <div className="grid md:grid-cols-3 gap-5 sm:gap-8 mb-12 sm:mb-16">
         {[
           { icon: <Box className="text-blue-500" />, title: t('skills.prop.title'), desc: t('skills.prop.desc') },
           { icon: <Palette className="text-emerald-500" />, title: t('skills.texturing.title'), desc: t('skills.texturing.desc') },
@@ -92,7 +92,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 + i * 0.1 }}
-            className="p-8 bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow"
+            className="p-6 sm:p-8 bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="mb-4">{skill.icon}</div>
             <h3 className="text-lg font-bold mb-2">{skill.title}</h3>
@@ -105,13 +105,13 @@ export default function Home() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="prose dark:prose-invert max-w-none mb-12"
+        className="prose dark:prose-invert max-w-none mb-10 sm:mb-12"
       >
-        <h2 className="text-3xl font-bold mb-6">{t('about.title')}</h2>
-        <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-5 sm:mb-6">{t('about.title')}</h2>
+        <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed mb-5 sm:mb-6">
           {t('about.p1')}
         </p>
-        <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
+        <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
           {t('about.p2')}
         </p>
       </motion.section>
@@ -122,8 +122,8 @@ export default function Home() {
         transition={{ delay: 0.7 }}
         className="max-w-none"
       >
-        <h2 className="text-3xl font-bold mb-8 text-neutral-900 dark:text-white">{t('exp.title')}</h2>
-        <div className="space-y-8">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neutral-900 dark:text-white">{t('exp.title')}</h2>
+        <div className="space-y-5 sm:space-y-8">
           {[
             {
               role: t('exp.job1.role'),
@@ -144,13 +144,13 @@ export default function Home() {
               description: t('exp.job3.desc')
             }
           ].map((job, index) => (
-            <div key={index} className="flex flex-col md:flex-row gap-4 md:gap-8 p-6 bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
+            <div key={index} className="flex flex-col md:flex-row gap-4 md:gap-8 p-5 sm:p-6 bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
               <div className="md:w-1/4 flex-shrink-0">
                 <p className="text-emerald-500 font-bold text-sm uppercase tracking-wider mb-1">{job.period}</p>
                 <h3 className="text-lg font-bold text-neutral-900 dark:text-white">{job.company}</h3>
               </div>
               <div className="md:w-3/4">
-                <h4 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 mb-3">{job.role}</h4>
+                <h4 className="text-lg sm:text-xl font-bold text-neutral-800 dark:text-neutral-200 mb-3">{job.role}</h4>
                 <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">{job.description}</p>
               </div>
             </div>
@@ -158,8 +158,8 @@ export default function Home() {
         </div>
       </motion.section>
 
-      <footer className="mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800 flex flex-col md:flex-row justify-between items-center gap-6">
-        <p className="text-sm text-neutral-500">{t('footer.rights')}</p>
+      <footer className="mt-12 sm:mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <p className="text-sm text-neutral-500 text-left">{t('footer.rights')}</p>
         <div className="flex gap-4">
           <a href="#" className="p-3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl hover:text-emerald-500 transition-colors">
             <Instagram size={20} />
@@ -186,16 +186,16 @@ export default function Home() {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-neutral-900 p-8 rounded-3xl max-w-sm w-full shadow-2xl border border-neutral-100 dark:border-neutral-800"
+              className="bg-white dark:bg-neutral-900 p-5 sm:p-8 rounded-3xl max-w-sm w-full shadow-2xl border border-neutral-100 dark:border-neutral-800"
               onClick={e => e.stopPropagation()}
             >
-              <h3 className="text-2xl font-bold mb-6 text-neutral-900 dark:text-white">{t('contact.title')}</h3>
+              <h3 className="text-xl sm:text-2xl font-bold mb-6 text-neutral-900 dark:text-white">{t('contact.title')}</h3>
               <div className="space-y-3">
                 <a href="mailto:hello@glebkuzn.com" className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group">
                   <div className="p-2 bg-white dark:bg-neutral-700 rounded-xl group-hover:scale-110 transition-transform shadow-sm">
                     <Mail size={20} className="text-neutral-700 dark:text-neutral-300" />
                   </div>
-                  <span className="font-medium text-neutral-700 dark:text-neutral-300">hello@glebkuzn.com</span>
+                  <span className="font-medium text-neutral-700 dark:text-neutral-300 break-all">hello@glebkuzn.com</span>
                 </a>
                 <a href="https://t.me/kuznecoff_3d" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group">
                   <div className="p-2 bg-white dark:bg-neutral-700 rounded-xl group-hover:scale-110 transition-transform shadow-sm">

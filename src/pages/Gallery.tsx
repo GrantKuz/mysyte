@@ -17,35 +17,35 @@ export default function Gallery() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-6">
-      <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
+    <div className="max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
+      <header className="mb-8 sm:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8">
         <div>
-          <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">Portfolio</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white mb-2">{t('gallery.title')}</h1>
           <p className="text-neutral-500">{t('gallery.desc')}</p>
         </div>
 
-        <div className="flex p-1 bg-neutral-100 dark:bg-neutral-800 rounded-2xl w-fit">
+        <div className="flex p-1 bg-neutral-100 dark:bg-neutral-800 rounded-2xl w-full sm:w-fit">
           <button
             onClick={() => setActiveTab('props')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+            className={`flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
               activeTab === 'props' 
                 ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm' 
                 : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
             }`}
           >
             <Box size={16} />
-            Props
+            {t('gallery.tab.props')}
           </button>
           <button
             onClick={() => setActiveTab('cinematics')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+            className={`flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
               activeTab === 'cinematics' 
                 ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm' 
                 : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
             }`}
           >
             <Film size={16} />
-            Cinematics
+            {t('gallery.tab.cinematics')}
           </button>
         </div>
       </header>

@@ -8,9 +8,12 @@ export interface WorkImage {
 export interface Work {
   id: string;
   title: string;
+  titleRu?: string;
   project: string;
+  projectRu?: string;
   polygons: string;
   description: string;
+  descriptionRu?: string;
   thumbnail: string;
   renderUrl: string;
   wireframeUrl: string;
