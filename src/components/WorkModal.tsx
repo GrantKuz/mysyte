@@ -1,0 +1,204 @@
+import { motion, AnimatePresence } from 'motion/react';
+import { X, Box, Layers, Play, Info, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Work } from '../types';
+import { useState } from 'react';
+import ThreeViewer from './ThreeViewer';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { useLanguage } from '../contexts/LanguageContext';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+interface WorkModalProps {
+  work: Work;
+  onClose: () => void;
+}
+
+export default function WorkModal({ work, onClose }: WorkModalProps) {
+  const [showWireframe, setShowWireframe] = useState(false);
+  const [view3D, setView3D] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
+  const { t } = useLanguage();
+
+  const images = work.images && work.images.length > 0 
+    ? work.images 
+    : [{ renderUrl: work.renderUrl, wireframeUrl: work.wireframeUrl }];
+
+  const currentImage = images[imageIndex];
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setImageIndex((prev) => (prev + 1) % images.length);
+    setShowWireframe(false);
+  };
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    setShowWireframe(false);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/80 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        className="bg-neutral-50 dark:bg-neutral-900 w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Media Section */}
+        <div className="flex-1 bg-neutral-200 dark:bg-neutral-800 relative group min-h-[300px] md:min-h-0 flex items-center justify-center">
+          {/* Base Image (always present to dictate size, but hidden if view3D or video) */}
+          <img
+            key={`render-${imageIndex}`}
+            src={currentImage.renderUrl}
+            alt={work.title}
+            className={cn(
+              "w-full h-full object-contain transition-opacity duration-300",
+              (view3D || (work.type === 'cinematic' && work.videoUrl)) ? "opacity-0" : "opacity-100"
+            )}
+            referrerPolicy="no-referrer"
+          />
+
+          <AnimatePresence>
+            {showWireframe && currentImage.wireframeUrl && !view3D && work.type !== 'cinematic' && (
+              <motion.img
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                src={currentImage.wireframeUrl}
+                alt="Wireframe"
+                className="absolute inset-0 w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen pointer-events-none"
+                referrerPolicy="no-referrer"
+              />
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {view3D && work.modelUrl && (
+              <motion.div
+                key="3d"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 w-full h-full"
+              >
+                <ThreeViewer modelUrl={work.modelUrl} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {work.type === 'cinematic' && work.videoUrl && (
+            <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
+              <video
+                src={work.videoUrl}
+                controls
+                autoPlay
+                className="max-w-full max-h-full"
+              />
+            </div>
+          )}
+
+          {images.length > 1 && !view3D && work.type !== 'cinematic' && (
+            <>
+              <button 
+                onClick={handlePrev}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-md transition-colors"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button 
+                onClick={handleNext}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-md transition-colors"
+              >
+                <ChevronRight size={24} />
+              </button>
+              <div className="absolute top-4 right-4 bg-black/50 text-white text-xs px-3 py-1 rounded-full backdrop-blur-md">
+                {imageIndex + 1} / {images.length}
+              </div>
+            </>
+          )}
+
+          {/* Controls Overlay */}
+          <div className="absolute bottom-6 left-6 flex gap-3 z-10">
+            {currentImage.wireframeUrl && !view3D && work.type !== 'cinematic' && (
+              <button
+                onClick={() => setShowWireframe(!showWireframe)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all",
+                  showWireframe 
+                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" 
+                    : "bg-white/90 text-neutral-900 hover:bg-white"
+                )}
+              >
+                <Layers size={14} />
+                {showWireframe ? t('modal.wireframe.hide') : t('modal.wireframe.show')}
+              </button>
+            )}
+            {work.modelUrl && (
+              <button
+                onClick={() => setView3D(!view3D)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all",
+                  view3D 
+                    ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30" 
+                    : "bg-white/90 text-neutral-900 hover:bg-white"
+                )}
+              >
+                <Box size={14} />
+                {view3D ? t('modal.3d.hide') : t('modal.3d.show')}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Info Section */}
+        <div className="w-full md:w-80 p-8 flex flex-col gap-6 overflow-y-auto">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-white leading-tight">
+                {work.title}
+              </h2>
+              <p className="text-sm text-neutral-500 font-medium mt-1">
+                {work.project}
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-full transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400">
+              <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
+                <Info size={16} />
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider font-bold opacity-50">{t('modal.triangles')}</p>
+                <p className="text-sm font-mono">{work.polygons}</p>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800">
+              <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                {work.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
