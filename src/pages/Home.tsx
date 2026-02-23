@@ -17,7 +17,7 @@ export default function Home() {
           className="w-48 h-48 md:w-64 md:h-64 rounded-3xl overflow-hidden bg-neutral-200 shadow-xl relative group"
         >
           <img 
-            src="src/img/profile.png" 
+            src="/img/profile.png" 
             alt="Artist Profile" 
             className="w-full h-full object-cover group-hover:grayscale-0 transition-all duration-700"
             referrerPolicy="no-referrer"
