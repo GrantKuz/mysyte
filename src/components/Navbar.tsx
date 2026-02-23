@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'motion/react';
-import { Box, Menu, Moon, Sun, X } from 'lucide-react';
+import { Menu, Moon, Sun, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -44,28 +44,24 @@ export default function Navbar() {
   ];
 
   const LanguageSwitch = (
-    <div className="flex items-center p-1 bg-neutral-100 dark:bg-neutral-800 rounded-xl">
+    <div className="flex items-center gap-1 p-0.5 border border-neutral-200 dark:border-neutral-800 rounded-full">
       <button
         onClick={() => setLanguage('en')}
-        className={`px-2.5 py-1 text-[11px] sm:text-xs font-bold rounded-lg transition-colors ${
+        className={`px-3 py-1 text-[10px] sm:text-xs font-bold rounded-full transition-all uppercase tracking-widest ${
           language === 'en'
-            ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm'
-            : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
+            ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+            : 'text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
         }`}
-        aria-pressed={language === 'en'}
-        title={language === 'en' ? t('nav.language.active.en') : t('nav.language.switch.en')}
       >
         {t('nav.lang.en')}
       </button>
       <button
         onClick={() => setLanguage('ru')}
-        className={`px-2.5 py-1 text-[11px] sm:text-xs font-bold rounded-lg transition-colors ${
+        className={`px-3 py-1 text-[10px] sm:text-xs font-bold rounded-full transition-all uppercase tracking-widest ${
           language === 'ru'
-            ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm'
-            : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
+            ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+            : 'text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
         }`}
-        aria-pressed={language === 'ru'}
-        title={language === 'ru' ? t('nav.language.active.ru') : t('nav.language.switch.ru')}
       >
         {t('nav.lang.ru')}
       </button>
@@ -80,30 +76,27 @@ export default function Navbar() {
           hidden: { y: '-100%' }
         }}
         animate={hidden ? 'hidden' : 'visible'}
-        transition={{ duration: 0.35, ease: 'easeInOut' }}
-        className="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-[#0e1318]/80 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-900"
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed top-0 left-0 right-0 z-40 bg-[#fafafa]/80 dark:bg-[#030303]/80 backdrop-blur-xl border-b border-neutral-200/50 dark:border-white/[0.05]"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-3">
-          <Link to="/" className="flex items-center gap-2 group shrink-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white group-hover:rotate-12 transition-transform">
-              <Box size={18} />
-            </div>
-            <span className="font-bold text-lg sm:text-xl tracking-tight text-neutral-900 dark:text-white">GK.ART</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 sm:h-24 flex items-center justify-between">
+          <Link to="/" className="flex items-center group shrink-0">
+            <span className="font-bold text-xl sm:text-2xl tracking-tighter uppercase text-neutral-900 dark:text-white group-hover:opacity-70 transition-opacity">GK.ART</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="flex gap-1 sm:gap-2">
+          <div className="hidden md:flex items-center gap-8 min-w-0">
+            <div className="flex gap-6">
               {links.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className="relative px-2.5 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-colors whitespace-nowrap"
+                  className="relative py-2 text-xs sm:text-sm font-bold uppercase tracking-widest transition-colors whitespace-nowrap group"
                 >
                   <span
                     className={
                       location.pathname === item.path
                         ? 'text-neutral-900 dark:text-white'
-                        : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
+                        : 'text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white'
                     }
                   >
                     {item.name}
@@ -111,7 +104,8 @@ export default function Navbar() {
                   {location.pathname === item.path && (
                     <motion.div
                       layoutId="nav-underline"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500 rounded-full mx-2.5 sm:mx-4"
+                      className="absolute bottom-0 left-0 right-0 h-px bg-neutral-900 dark:bg-white"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}
                 </Link>
@@ -125,33 +119,28 @@ export default function Navbar() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="h-8 w-8 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors grid place-items-center"
+              className="w-8 h-8 flex items-center justify-center rounded-full text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
               title={theme === 'dark' ? t('nav.theme.light') : t('nav.theme.dark')}
-              aria-label={theme === 'dark' ? t('nav.theme.light') : t('nav.theme.dark')}
             >
-              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+              {theme === 'dark' ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
             </button>
           </div>
 
-          <div className="md:hidden flex items-center gap-2">
+          <div className="md:hidden flex items-center gap-4">
             <button
               type="button"
               onClick={toggleTheme}
-              className="h-8 w-8 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors grid place-items-center"
-              title={theme === 'dark' ? t('nav.theme.light') : t('nav.theme.dark')}
-              aria-label={theme === 'dark' ? t('nav.theme.light') : t('nav.theme.dark')}
+              className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
             >
-              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+              {theme === 'dark' ? <Sun size={18} strokeWidth={2} /> : <Moon size={18} strokeWidth={2} />}
             </button>
 
             <button
               type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="h-8 w-8 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors grid place-items-center"
-              title={mobileMenuOpen ? t('nav.menu.close') : t('nav.menu.open')}
-              aria-label={mobileMenuOpen ? t('nav.menu.close') : t('nav.menu.open')}
+              className="text-neutral-900 dark:text-white"
             >
-              {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+              {mobileMenuOpen ? <X size={24} strokeWidth={1.5} /> : <Menu size={24} strokeWidth={1.5} />}
             </button>
           </div>
         </div>
@@ -160,35 +149,30 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
-            <motion.button
-              key="mobile-overlay"
-              type="button"
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="md:hidden fixed inset-0 top-16 z-30 bg-black/40"
-              onClick={() => setMobileMenuOpen(false)}
-              aria-label={t('nav.menu.close')}
+              transition={{ duration: 0.4 }}
+              className="md:hidden fixed inset-0 top-20 z-30 bg-[#fafafa]/95 dark:bg-[#030303]/95 backdrop-blur-2xl"
             />
 
             <motion.aside
-              key="mobile-drawer"
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="md:hidden fixed top-16 right-0 bottom-0 z-40 w-[min(84vw,320px)] border-l border-neutral-200/60 dark:border-neutral-800/70 bg-white/95 dark:bg-[#11181f]/95 backdrop-blur-xl p-5"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="md:hidden fixed top-24 left-0 right-0 z-40 p-8 flex flex-col gap-8"
             >
-              <nav className="space-y-2">
+              <nav className="flex flex-col gap-6">
                 {links.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`block px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                    className={`text-2xl font-bold uppercase tracking-widest transition-colors ${
                       location.pathname === item.path
-                        ? 'bg-emerald-500 text-white'
-                        : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200'
+                        ? 'text-neutral-900 dark:text-white'
+                        : 'text-neutral-400'
                     }`}
                   >
                     {item.name}
@@ -196,7 +180,7 @@ export default function Navbar() {
                 ))}
               </nav>
 
-              <div className="mt-5 pt-5 border-t border-neutral-200 dark:border-neutral-800">
+              <div className="pt-8 border-t border-neutral-200 dark:border-neutral-800">
                 {LanguageSwitch}
               </div>
             </motion.aside>

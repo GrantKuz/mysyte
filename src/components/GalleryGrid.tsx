@@ -32,11 +32,11 @@ function GalleryCard({ work, index, onWorkClick }: GalleryCardProps) {
   return (
     <motion.div
       key={work.id}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
+      transition={{ delay: index * 0.05, duration: 0.8 }}
       onClick={() => onWorkClick(work)}
-      className="group relative aspect-square rounded-2xl overflow-hidden bg-neutral-100/80 dark:bg-neutral-800/70 border border-white/60 dark:border-neutral-700/60 cursor-pointer shadow-lg shadow-black/5 dark:shadow-black/30 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+      className="group relative aspect-[4/5] bg-neutral-100 dark:bg-neutral-900 overflow-hidden cursor-pointer"
     >
       {thumbnailUrl && (
         <img
@@ -45,35 +45,34 @@ function GalleryCard({ work, index, onWorkClick }: GalleryCardProps) {
           draggable={false}
           loading="lazy"
           decoding="async"
-          fetchPriority="low"
-          sizes="(max-width: 768px) 48vw, (max-width: 1024px) 31vw, 24vw"
           onLoad={() => setIsLoaded(true)}
           onError={() => setIsLoaded(true)}
           onDragStart={(event) => event.preventDefault()}
           onContextMenu={(event) => event.preventDefault()}
-          className={`w-full h-full object-cover transition-all duration-500 ${
-            !showLoader ? 'opacity-100 scale-100 group-hover:scale-110' : 'opacity-0 scale-105'
+          className={`w-full h-full object-cover transition-all duration-1000 ${
+            !showLoader ? 'opacity-100 scale-100 group-hover:scale-105' : 'opacity-0 scale-110'
           }`}
           referrerPolicy="no-referrer"
         />
       )}
 
       {showLoader && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-neutral-500 dark:text-neutral-300 bg-gradient-to-br from-white/70 to-neutral-100/40 dark:from-neutral-900/40 dark:to-neutral-800/40">
-          <div className="w-7 h-7 border-2 border-current/20 border-t-current rounded-full animate-spin" />
-          <p className="text-[11px] uppercase tracking-wider">{t('common.loading')}</p>
+        <div className="absolute inset-0 flex items-center justify-center text-neutral-400 bg-neutral-100 dark:bg-neutral-900">
+           <p className="text-[10px] uppercase tracking-[0.2em] font-bold animate-pulse">{t('common.loading')}</p>
         </div>
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4">
-        <div className="flex items-center justify-between">
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-700 pointer-events-none" />
+      
+      <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out flex flex-col justify-end pointer-events-none">
+        <div className="flex items-center justify-between pointer-events-auto">
           <div>
-            <p className="text-white font-bold text-xs sm:text-sm leading-tight">{title}</p>
-            <p className="text-white/70 text-[10px] uppercase tracking-wider mt-0.5">{project}</p>
+            <p className="text-white font-bold text-xl md:text-2xl uppercase tracking-tighter leading-none mb-2">{title}</p>
+            <p className="text-white/70 text-[10px] sm:text-xs font-bold uppercase tracking-widest">{project}</p>
           </div>
           {work.type === 'cinematic' && (
-            <div className="bg-white/20 backdrop-blur-md p-2 rounded-full">
-              <Play size={14} className="text-white fill-white" />
+            <div className="p-3 bg-white/10 backdrop-blur-md rounded-full text-white">
+              <Play size={16} className="fill-white" />
             </div>
           )}
         </div>
@@ -84,7 +83,7 @@ function GalleryCard({ work, index, onWorkClick }: GalleryCardProps) {
 
 export default function GalleryGrid({ works, onWorkClick }: GalleryGridProps) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
       {works.map((work, index) => (
         <GalleryCard
           key={work.id}

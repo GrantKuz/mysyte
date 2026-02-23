@@ -1,179 +1,207 @@
-import { motion, AnimatePresence } from 'motion/react';
-import { Mail, Instagram, ExternalLink, Box, Palette, Zap, Send } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { Mail, Instagram, Send, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const { t } = useLanguage();
 
+  // Жестко задаем тип кортежа (Tuple), чтобы TS не ругался на Easing
+  const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+  const jobs = [
+    { role: t('exp.job1.role'), company: t('exp.job1.company'), period: t('exp.job1.period'), desc: t('exp.job1.desc') },
+    { role: t('exp.job2.role'), company: t('exp.job2.company'), period: t('exp.job2.period'), desc: t('exp.job2.desc') },
+    { role: t('exp.job3.role'), company: t('exp.job3.company'), period: t('exp.job3.period'), desc: t('exp.job3.desc') }
+  ];
+
+  const software = ['Blender', 'Substance 3D Painter', 'ZBrush', 'Unreal Engine 5', 'Photoshop', 'Marmoset Toolbag'];
+  const marqueeItems = [...software, ...software, ...software, ...software];
+
+  // 3D Tilt эффект для фото
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
   return (
-    <div className="max-w-5xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
-      <section className="flex flex-col md:flex-row gap-8 sm:gap-12 items-center mb-12 sm:mb-16 rounded-3xl p-5 sm:p-8 border border-white/60 dark:border-neutral-800/80 bg-white/70 dark:bg-neutral-900/60 backdrop-blur-xl shadow-xl shadow-black/5 dark:shadow-black/20">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-3xl overflow-hidden bg-neutral-200 shadow-xl relative group ring-4 ring-white/60 dark:ring-white/10"
+    <>
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 overflow-hidden">
+        <section className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-center lg:items-end pt-12 pb-24 md:pb-40 border-b border-neutral-200 dark:border-neutral-800 perspective-[1000px]">
+          <div className="flex-1 w-full order-2 lg:order-1">
+            <div className="overflow-hidden">
+              <motion.h1 
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 1, ease }}
+                className="text-6xl sm:text-8xl lg:text-[9rem] font-bold tracking-tighter uppercase leading-[0.85] text-neutral-900 dark:text-white"
+              >
+                Gleb<br />Kuzn
+              </motion.h1>
+            </div>
+            <div className="mt-8 lg:mt-16 flex flex-col sm:flex-row sm:items-center gap-6">
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 1, ease }}
+                className="text-lg md:text-xl font-medium text-neutral-500 uppercase tracking-[0.2em]"
+              >
+                {t('role')}
+              </motion.p>
+            </div>
+          </div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 1.2, ease }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+            className="w-full lg:w-[420px] aspect-[4/5] bg-neutral-200 dark:bg-neutral-900 relative order-1 lg:order-2 will-change-transform cursor-pointer"
+          >
+            <motion.div 
+              className="absolute inset-0 bg-black/20 dark:bg-black/40 blur-xl -z-10"
+              style={{ x: useTransform(mouseXSpring, [-0.5, 0.5], [-20, 20]), y: useTransform(mouseYSpring, [-0.5, 0.5], [-20, 20]) }}
+            />
+            <img 
+              src="/img/profile.png" 
+              alt="Gleb Kuzn" 
+              className="w-full h-full object-cover transition-all duration-1000 object-center"
+            />
+          </motion.div>
+        </section>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 py-24 md:py-40 border-b border-neutral-200 dark:border-neutral-800">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1, ease }}
+          >
+            <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold text-neutral-400 mb-8 sm:mb-12">{t('about.title')}</h2>
+            <p className="text-xl sm:text-3xl leading-snug font-medium text-neutral-900 dark:text-white mb-8">
+              {t('about.p1')}
+            </p>
+            <p className="text-lg sm:text-xl text-neutral-500 leading-relaxed mb-12">
+              {t('about.p2')}
+            </p>
+            <div className="flex flex-wrap gap-8">
+              <Link to="/gallery" className="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-neutral-900 dark:text-white hover:opacity-50 transition-opacity">
+                {t('viewWorks')} <ArrowRight size={16} />
+              </Link>
+              <button onClick={() => setIsContactOpen(true)} className="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-neutral-900 dark:text-white hover:opacity-50 transition-opacity">
+                {t('getInTouch')} <ArrowRight size={16} />
+              </button>
+            </div>
+          </motion.div>
+
+          <div className="space-y-16 sm:space-y-24 w-full overflow-hidden">
+            <motion.div 
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1, delay: 0.1, ease }}
+            >
+              <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold text-neutral-400 mb-8">{t('software')}</h2>
+              
+              <div className="relative w-full overflow-hidden flex whitespace-nowrap bg-neutral-100 dark:bg-[#0a0a0a] py-6 border-y border-neutral-200 dark:border-neutral-900">
+                <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#fafafa] dark:from-[#030303] to-transparent z-10" />
+                <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#fafafa] dark:from-[#030303] to-transparent z-10" />
+                
+                <div className="flex animate-marquee min-w-max">
+                  {marqueeItems.map((sw, i) => (
+                    <span key={i} className="text-2xl sm:text-4xl font-bold uppercase tracking-tight text-neutral-900 dark:text-white mx-6 sm:mx-10 opacity-70 hover:opacity-100 transition-opacity">
+                      {sw}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1, delay: 0.2, ease }}
+            >
+              <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold text-neutral-400 mb-8">Expertise</h2>
+              <ul className="space-y-8">
+                {[{ title: t('skills.prop.title'), desc: t('skills.prop.desc') }, { title: t('skills.texturing.title'), desc: t('skills.texturing.desc') }, { title: t('skills.opt.title'), desc: t('skills.opt.desc') }].map((skill, i) => (
+                  <li key={i} className="border-b border-neutral-200 dark:border-neutral-800 pb-8 last:border-0 last:pb-0">
+                    <h3 className="text-xl font-bold uppercase tracking-wider mb-3 text-neutral-900 dark:text-white">{skill.title}</h3>
+                    <p className="text-neutral-500 text-base">{skill.desc}</p>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+
+        <motion.section 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1, ease }}
+          className="py-24 md:py-40"
         >
-          <img 
-            src="/img/profile.png" 
-            alt="Artist Profile" 
-            loading="eager"
-            decoding="async"
-            className="w-full h-full object-cover group-hover:grayscale-0 transition-all duration-700"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 border-4 border-white/20 rounded-3xl pointer-events-none" />
-        </motion.div>
+          <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold text-neutral-400 mb-16">{t('exp.title')}</h2>
+          <div className="flex flex-col border-t border-neutral-200 dark:border-neutral-800">
+            {jobs.map((job, i) => (
+              <div key={i} className="py-12 border-b border-neutral-200 dark:border-neutral-800 flex flex-col md:flex-row md:items-start gap-6 md:gap-16 group transition-all duration-500 cursor-default relative overflow-hidden">
+                <div className="absolute inset-0 bg-neutral-100 dark:bg-neutral-900/50 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.16,1,0.3,1] -z-10" />
+                <div className="w-full md:w-1/3 shrink-0 relative z-10 px-4">
+                  <p className="text-xs font-mono font-bold text-neutral-400 mb-3">{job.period}</p>
+                  <h3 className="text-xl font-bold uppercase tracking-wide text-neutral-900 dark:text-white transition-opacity">{job.company}</h3>
+                </div>
+                <div className="w-full md:w-2/3 relative z-10 px-4">
+                  <h4 className="text-2xl font-bold mb-4 text-neutral-900 dark:text-white">{job.role}</h4>
+                  <p className="text-neutral-500 text-lg leading-relaxed max-w-3xl">{job.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.section>
 
-        <div className="flex-1 text-center md:text-left">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl sm:text-5xl font-bold text-neutral-900 dark:text-white mb-3 sm:mb-4 tracking-tight flex flex-col sm:flex-row items-center sm:items-baseline justify-center md:justify-start gap-1 sm:gap-4"
-          >
-            <span>Gleb <span className="text-emerald-500">Kuzn</span></span>
-            <span className="text-lg sm:text-2xl font-medium text-[#a1a1a1]">{t('home.age')}</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-base sm:text-xl text-neutral-600 dark:text-neutral-400 mb-6 sm:mb-8 font-medium"
-          >
-            {t('role')}
-          </motion.p>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-wrap gap-3 sm:gap-4 justify-center md:justify-start"
-          >
-            <Link 
-              to="/gallery" 
-              className="w-full sm:w-auto text-center px-6 sm:px-8 py-3 bg-neutral-900 dark:bg-white dark:text-neutral-900 text-white rounded-2xl font-bold hover:scale-105 transition-transform shadow-lg shadow-neutral-900/20"
-            >
-              {t('viewWorks')}
-            </Link>
-            <button 
-              onClick={() => setIsContactOpen(true)}
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-2xl font-bold hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-            >
-              {t('getInTouch')}
-            </button>
-          </motion.div>
-        </div>
-      </section>
-
-      <motion.section 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="mb-12 sm:mb-16 rounded-3xl p-5 sm:p-7 border border-white/60 dark:border-neutral-800/80 bg-white/70 dark:bg-neutral-900/60 backdrop-blur-xl shadow-xl shadow-black/5 dark:shadow-black/20"
-      >
-        <h2 className="text-2xl font-bold mb-5 sm:mb-6 text-neutral-900 dark:text-white">{t('software')}</h2>
-        <div className="flex flex-wrap gap-3 sm:gap-4">
-          {['Blender 3D', 'Adobe Substance 3D Painter', 'Adobe Photoshop', 'ZBrush'].map((software, i) => (
-            <div key={i} className="px-4 sm:px-6 py-2.5 sm:py-3 bg-white/90 dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm text-sm sm:text-base font-medium text-neutral-800 dark:text-neutral-200">
-              {software}
-            </div>
-          ))}
-        </div>
-      </motion.section>
-
-      <div className="grid md:grid-cols-3 gap-5 sm:gap-8 mb-12 sm:mb-16">
-        {[
-          { icon: <Box className="text-blue-500" />, title: t('skills.prop.title'), desc: t('skills.prop.desc') },
-          { icon: <Palette className="text-emerald-500" />, title: t('skills.texturing.title'), desc: t('skills.texturing.desc') },
-          { icon: <Zap className="text-amber-500" />, title: t('skills.opt.title'), desc: t('skills.opt.desc') }
-        ].map((skill, i) => (
-          <motion.div 
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 + i * 0.1 }}
-            className="p-6 sm:p-8 bg-white/80 dark:bg-neutral-900/70 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-md shadow-black/5 dark:shadow-black/20 hover:-translate-y-1 hover:shadow-xl transition-all"
-          >
-            <div className="mb-4">{skill.icon}</div>
-            <h3 className="text-lg font-bold mb-2">{skill.title}</h3>
-            <p className="text-sm text-neutral-500 leading-relaxed">{skill.desc}</p>
-          </motion.div>
-        ))}
+        <footer className="pt-12 pb-8 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row justify-between items-center gap-8">
+          <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-neutral-400">{t('footer.rights')}</p>
+          <div className="flex gap-8">
+            <a href="#" className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
+              <Instagram size={20} strokeWidth={1.5} />
+            </a>
+            <a href="https://t.me/kuznecoff_3d" target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
+              <Send size={20} strokeWidth={1.5} />
+            </a>
+            <a href="mailto:hello@glebkuzn.com" className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
+              <Mail size={20} strokeWidth={1.5} />
+            </a>
+          </div>
+        </footer>
       </div>
-
-      <motion.section 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="prose dark:prose-invert max-w-none mb-10 sm:mb-12"
-      >
-        <h2 className="text-2xl sm:text-3xl font-bold mb-5 sm:mb-6">{t('about.title')}</h2>
-        <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed mb-5 sm:mb-6">
-          {t('about.p1')}
-        </p>
-        <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
-          {t('about.p2')}
-        </p>
-      </motion.section>
-
-      <motion.section 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7 }}
-        className="max-w-none"
-      >
-        <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neutral-900 dark:text-white">{t('exp.title')}</h2>
-        <div className="space-y-5 sm:space-y-8">
-          {[
-            {
-              role: t('exp.job1.role'),
-              company: t('exp.job1.company'),
-              period: t('exp.job1.period'),
-              description: t('exp.job1.desc')
-            },
-            {
-              role: t('exp.job2.role'),
-              company: t('exp.job2.company'),
-              period: t('exp.job2.period'),
-              description: t('exp.job2.desc')
-            },
-            {
-              role: t('exp.job3.role'),
-              company: t('exp.job3.company'),
-              period: t('exp.job3.period'),
-              description: t('exp.job3.desc')
-            }
-          ].map((job, index) => (
-            <div key={index} className="flex flex-col md:flex-row gap-4 md:gap-8 p-5 sm:p-6 bg-white/80 dark:bg-neutral-900/70 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-md shadow-black/5 dark:shadow-black/20 hover:-translate-y-1 hover:shadow-xl transition-all">
-              <div className="md:w-1/4 flex-shrink-0">
-                <p className="text-emerald-500 font-bold text-sm uppercase tracking-wider mb-1">{job.period}</p>
-                <h3 className="text-lg font-bold text-neutral-900 dark:text-white">{job.company}</h3>
-              </div>
-              <div className="md:w-3/4">
-                <h4 className="text-lg sm:text-xl font-bold text-neutral-800 dark:text-neutral-200 mb-3">{job.role}</h4>
-                <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">{job.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.section>
-
-      <footer className="mt-12 sm:mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <p className="text-sm text-neutral-500 text-left">{t('footer.rights')}</p>
-        <div className="flex gap-4">
-          <a href="#" className="p-3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl hover:text-emerald-500 transition-colors">
-            <Instagram size={20} />
-          </a>
-          <a href="https://t.me/kuznecoff_3d" target="_blank" rel="noopener noreferrer" className="p-3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl hover:text-emerald-500 transition-colors">
-            <Send size={20} />
-          </a>
-          <a href="#" className="p-3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl hover:text-emerald-500 transition-colors">
-            <ExternalLink size={20} />
-          </a>
-        </div>
-      </footer>
 
       <AnimatePresence>
         {isContactOpen && (
@@ -181,40 +209,41 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#fafafa]/95 dark:bg-[#030303]/95 backdrop-blur-2xl"
             onClick={() => setIsContactOpen(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-neutral-900 p-5 sm:p-8 rounded-3xl max-w-sm w-full shadow-2xl border border-neutral-100 dark:border-neutral-800"
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ duration: 0.6, ease }}
+              className="bg-transparent p-8 w-full max-w-2xl"
               onClick={e => e.stopPropagation()}
             >
-              <h3 className="text-xl sm:text-2xl font-bold mb-6 text-neutral-900 dark:text-white">{t('contact.title')}</h3>
-              <div className="space-y-3">
-                <a href="mailto:hello@glebkuzn.com" className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group">
-                  <div className="p-2 bg-white dark:bg-neutral-700 rounded-xl group-hover:scale-110 transition-transform shadow-sm">
-                    <Mail size={20} className="text-neutral-700 dark:text-neutral-300" />
-                  </div>
-                  <span className="font-medium text-neutral-700 dark:text-neutral-300 break-all">hello@glebkuzn.com</span>
+              <h3 className="text-4xl sm:text-6xl font-bold mb-12 tracking-tighter uppercase text-neutral-900 dark:text-white">{t('contact.title')}</h3>
+              <div className="flex flex-col gap-6">
+                <a href="mailto:hello@glebkuzn.com" className="flex items-center gap-6 group">
+                  <span className="text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                    <Mail size={24} strokeWidth={1.5} />
+                  </span>
+                  <span className="text-2xl sm:text-4xl font-medium tracking-tight text-neutral-900 dark:text-white group-hover:opacity-60 transition-opacity">hello@glebkuzn.com</span>
                 </a>
-                <a href="https://t.me/kuznecoff_3d" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group">
-                  <div className="p-2 bg-white dark:bg-neutral-700 rounded-xl group-hover:scale-110 transition-transform shadow-sm">
-                    <Send size={20} className="text-blue-500" />
-                  </div>
-                  <span className="font-medium text-neutral-700 dark:text-neutral-300">@kuznecoff_3d</span>
+                <a href="https://t.me/kuznecoff_3d" target="_blank" rel="noopener noreferrer" className="flex items-center gap-6 group">
+                  <span className="text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                    <Send size={24} strokeWidth={1.5} />
+                  </span>
+                  <span className="text-2xl sm:text-4xl font-medium tracking-tight text-neutral-900 dark:text-white group-hover:opacity-60 transition-opacity">@kuznecoff_3d</span>
                 </a>
-                <a href="#" className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group">
-                  <div className="p-2 bg-white dark:bg-neutral-700 rounded-xl group-hover:scale-110 transition-transform shadow-sm">
-                    <Instagram size={20} className="text-pink-500" />
-                  </div>
-                  <span className="font-medium text-neutral-700 dark:text-neutral-300">@gleb.kuzn</span>
+                <a href="#" className="flex items-center gap-6 group">
+                  <span className="text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                    <Instagram size={24} strokeWidth={1.5} />
+                  </span>
+                  <span className="text-2xl sm:text-4xl font-medium tracking-tight text-neutral-900 dark:text-white group-hover:opacity-60 transition-opacity">@gleb.kuzn</span>
                 </a>
               </div>
               <button 
                 onClick={() => setIsContactOpen(false)}
-                className="mt-8 w-full py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-xl font-bold hover:opacity-90 transition-opacity"
+                className="mt-16 text-sm font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
               >
                 {t('contact.close')}
               </button>
@@ -222,6 +251,6 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }

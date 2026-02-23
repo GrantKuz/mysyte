@@ -25,6 +25,8 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const { language, t } = useLanguage();
 
+  const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
   const images =
     work.images && work.images.length > 0
       ? work.images
@@ -78,17 +80,26 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-8 bg-black/80 backdrop-blur-sm"
+      transition={{ duration: 0.6, ease }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-8 lg:p-12 bg-[#fafafa]/95 dark:bg-[#030303]/95 backdrop-blur-2xl"
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        initial={{ scale: 0.98, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="bg-neutral-50 dark:bg-neutral-900 w-full max-w-5xl max-h-[95vh] md:max-h-[90vh] rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl"
+        exit={{ scale: 0.98, opacity: 0, y: 20 }}
+        transition={{ duration: 0.8, ease }}
+        className="bg-white dark:bg-[#0a0a0a] w-full h-full max-w-[1400px] flex flex-col md:flex-row shadow-2xl overflow-hidden border border-neutral-200 dark:border-neutral-900"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex-1 bg-neutral-200 dark:bg-neutral-800 relative group min-h-[220px] sm:min-h-[300px] md:min-h-0 flex items-center justify-center">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 md:top-8 md:right-8 z-50 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+        >
+          <X size={32} strokeWidth={1} />
+        </button>
+
+        <div className="flex-1 bg-neutral-100 dark:bg-[#050505] relative group min-h-[40vh] md:min-h-0 flex items-center justify-center overflow-hidden">
           {renderSrc && (
             <img
               key={`render-${imageIndex}`}
@@ -100,7 +111,7 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
               onDragStart={(event) => event.preventDefault()}
               onContextMenu={(event) => event.preventDefault()}
               className={cn(
-                'w-full h-full object-contain transition-opacity duration-300',
+                'w-full h-full object-contain transition-opacity duration-700',
                 showRenderImage && !showRenderLoader ? 'opacity-100' : 'opacity-0'
               )}
               referrerPolicy="no-referrer"
@@ -108,9 +119,8 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
           )}
 
           {showRenderLoader && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-neutral-500 dark:text-neutral-300">
-              <div className="w-8 h-8 border-2 border-current/20 border-t-current rounded-full animate-spin" />
-              <p className="text-xs uppercase tracking-wider">{t('common.loading')}</p>
+            <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
+              <p className="text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">{t('common.loading')}</p>
             </div>
           )}
 
@@ -120,6 +130,7 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease }}
                 src={wireframeSrc}
                 alt={t('modal.wireframe.alt')}
                 draggable={false}
@@ -138,14 +149,14 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease }}
                 className="absolute inset-0 w-full h-full"
               >
                 {modelSrc && !modelResolving ? (
                   <ThreeViewer modelUrl={modelSrc} />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-neutral-500 dark:text-neutral-300">
-                    <div className="w-8 h-8 border-2 border-current/20 border-t-current rounded-full animate-spin" />
-                    <p className="text-xs uppercase tracking-wider">{t('common.loading')}</p>
+                  <div className="w-full h-full flex items-center justify-center text-neutral-400">
+                    <p className="text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">{t('common.loading')}</p>
                   </div>
                 )}
               </motion.div>
@@ -155,9 +166,8 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
           {showVideo && (
             <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
               {showVideoLoader && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-neutral-300">
-                  <div className="w-8 h-8 border-2 border-current/20 border-t-current rounded-full animate-spin" />
-                  <p className="text-xs uppercase tracking-wider">{t('common.loading')}</p>
+                <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
+                  <p className="text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">{t('common.loading')}</p>
                 </div>
               )}
               {videoSrc && (
@@ -173,7 +183,7 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
                   onError={() => setIsVideoLoaded(true)}
                   onContextMenu={(event) => event.preventDefault()}
                   className={cn(
-                    'max-w-full max-h-full transition-opacity duration-300',
+                    'max-w-full max-h-full transition-opacity duration-700',
                     !showVideoLoader ? 'opacity-100' : 'opacity-0'
                   )}
                 />
@@ -185,31 +195,31 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
             <>
               <button
                 onClick={handlePrev}
-                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-md transition-colors"
+                className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
               >
-                <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
+                <ChevronLeft size={32} strokeWidth={1} />
               </button>
               <button
                 onClick={handleNext}
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-md transition-colors"
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
               >
-                <ChevronRight size={20} className="sm:w-6 sm:h-6" />
+                <ChevronRight size={32} strokeWidth={1} />
               </button>
-              <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-black/50 text-white text-xs px-2.5 sm:px-3 py-1 rounded-full backdrop-blur-md">
+              <div className="absolute bottom-8 right-8 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                 {imageIndex + 1} / {images.length}
               </div>
             </>
           )}
 
-          <div className="absolute bottom-3 sm:bottom-6 left-3 sm:left-6 right-3 sm:right-auto flex flex-wrap gap-2 sm:gap-3 z-10">
+          <div className="absolute bottom-6 left-6 flex flex-wrap gap-4 z-10">
             {currentImage.wireframeUrl && !view3D && work.type !== 'cinematic' && (
               <button
                 onClick={() => setShowWireframe(!showWireframe)}
                 className={cn(
-                  'flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-[11px] sm:text-xs font-medium transition-all',
+                  'flex items-center gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all border bg-white/5 backdrop-blur-sm',
                   showWireframe
-                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                    : 'bg-white/90 text-neutral-900 hover:bg-white'
+                    ? 'bg-neutral-900 text-white border-neutral-900 dark:bg-white dark:text-black dark:border-white'
+                    : 'text-neutral-500 border-neutral-300 dark:border-neutral-700 hover:text-neutral-900 dark:hover:text-white hover:border-neutral-900 dark:hover:border-white'
                 )}
               >
                 <Layers size={14} />
@@ -220,10 +230,10 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
               <button
                 onClick={() => setView3D(!view3D)}
                 className={cn(
-                  'flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-[11px] sm:text-xs font-medium transition-all',
+                  'flex items-center gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all border bg-white/5 backdrop-blur-sm',
                   view3D
-                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-                    : 'bg-white/90 text-neutral-900 hover:bg-white'
+                    ? 'bg-neutral-900 text-white border-neutral-900 dark:bg-white dark:text-black dark:border-white'
+                    : 'text-neutral-500 border-neutral-300 dark:border-neutral-700 hover:text-neutral-900 dark:hover:text-white hover:border-neutral-900 dark:hover:border-white'
                 )}
               >
                 <Box size={14} />
@@ -233,37 +243,29 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
           </div>
         </div>
 
-        <div className="w-full md:w-80 p-5 sm:p-8 flex flex-col gap-5 sm:gap-6 overflow-y-auto">
-          <div className="flex justify-between items-start">
+        <div className="w-full md:w-[400px] lg:w-[480px] p-8 md:p-12 flex flex-col justify-start pt-16 md:pt-24 gap-8 overflow-y-auto bg-white dark:bg-[#0a0a0a]">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white uppercase tracking-tight leading-none mb-4 break-words hyphens-auto">
+              {title}
+            </h2>
+            <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-neutral-400">{project}</p>
+          </div>
+
+          <div className="w-full h-px bg-neutral-200 dark:bg-neutral-900 shrink-0" />
+
+          <div className="flex items-center gap-4 text-neutral-900 dark:text-white">
+            <Info size={16} className="text-neutral-400" />
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white leading-tight">
-                {title}
-              </h2>
-              <p className="text-sm text-neutral-500 font-medium mt-1">{project}</p>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-full transition-colors shrink-0"
-            >
-              <X size={20} />
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400">
-              <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-                <Info size={16} />
-              </div>
-              <div>
-                <p className="text-[10px] uppercase tracking-wider font-bold opacity-50">{t('modal.triangles')}</p>
-                <p className="text-sm font-mono">{work.polygons}</p>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800">
-              <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{description}</p>
+              <p className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-1">{t('modal.triangles')}</p>
+              <p className="text-sm font-mono font-medium">{work.polygons}</p>
             </div>
           </div>
+
+          <div className="w-full h-px bg-neutral-200 dark:bg-neutral-900 shrink-0" />
+
+          <p className="text-base text-neutral-500 leading-relaxed font-medium">
+            {description}
+          </p>
         </div>
       </motion.div>
     </motion.div>

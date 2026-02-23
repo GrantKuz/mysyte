@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
 import { works as baseWorks } from '../data/works';
 import { Work, GalleryTab } from '../types';
 import GalleryGrid from '../components/GalleryGrid';
 import WorkModal from '../components/WorkModal';
-import { Box, ChevronLeft, ChevronRight, Film } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { loadCustomWorks, onCustomWorksUpdated } from '../lib/workStorage';
 import { isRemoteCatalogEnabled, loadRemoteWorks, onRemoteWorksUpdated } from '../lib/remoteCatalog';
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 6;
 
 export default function Gallery() {
   const [activeTab, setActiveTab] = useState<GalleryTab>('props');
@@ -95,36 +95,37 @@ export default function Gallery() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
-      <header className="mb-8 sm:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 rounded-3xl p-5 sm:p-7 border border-white/60 dark:border-neutral-800/80 bg-white/70 dark:bg-neutral-900/60 backdrop-blur-xl shadow-xl shadow-black/5 dark:shadow-black/20">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white mb-2">{t('gallery.title')}</h1>
-          <p className="text-neutral-500">{t('gallery.desc')}</p>
-        </div>
-
-        <div className="flex p-1 bg-neutral-100 dark:bg-neutral-800 rounded-2xl w-full sm:w-fit">
-          <button
-            onClick={() => setActiveTab('props')}
-            className={`flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-              activeTab === 'props' 
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm' 
-                : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
-            }`}
-          >
-            <Box size={16} />
-            {t('gallery.tab.props')}
-          </button>
-          <button
-            onClick={() => setActiveTab('cinematics')}
-            className={`flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-              activeTab === 'cinematics' 
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm' 
-                : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
-            }`}
-          >
-            <Film size={16} />
-            {t('gallery.tab.cinematics')}
-          </button>
+    <div className="max-w-7xl mx-auto px-4 sm:px-8">
+      <header className="py-12 md:py-24">
+        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tighter uppercase mb-8 sm:mb-16 text-neutral-900 dark:text-white">
+          {t('gallery.title')}
+        </h1>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-neutral-200 dark:border-neutral-800 pb-8">
+          <p className="text-lg md:text-xl text-neutral-500 max-w-md font-medium">
+            {t('gallery.desc')}
+          </p>
+          <div className="flex gap-6 sm:gap-8">
+            <button
+              onClick={() => setActiveTab('props')}
+              className={`pb-2 text-xs sm:text-sm font-bold uppercase tracking-widest transition-all border-b-2 ${
+                activeTab === 'props' 
+                  ? 'border-neutral-900 text-neutral-900 dark:border-white dark:text-white' 
+                  : 'border-transparent text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+              }`}
+            >
+              {t('gallery.tab.props')}
+            </button>
+            <button
+              onClick={() => setActiveTab('cinematics')}
+              className={`pb-2 text-xs sm:text-sm font-bold uppercase tracking-widest transition-all border-b-2 ${
+                activeTab === 'cinematics' 
+                  ? 'border-neutral-900 text-neutral-900 dark:border-white dark:text-white' 
+                  : 'border-transparent text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+              }`}
+            >
+              {t('gallery.tab.cinematics')}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -134,25 +135,23 @@ export default function Gallery() {
       />
 
       {totalPages > 1 && (
-        <div className="mt-8 sm:mt-10 flex items-center justify-center gap-2 sm:gap-3">
+        <div className="mt-16 sm:mt-24 flex items-center justify-center gap-6">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
-            className="inline-flex items-center gap-1 px-3 sm:px-4 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <ChevronLeft size={16} />
-            {t('gallery.pagination.prev')}
+            <ChevronLeft size={24} strokeWidth={1.5} />
           </button>
-          <p className="text-xs sm:text-sm font-semibold text-neutral-600 dark:text-neutral-300 min-w-[90px] text-center">
-            {t('gallery.pagination.page')} {currentPage} / {totalPages}
+          <p className="text-xs sm:text-sm font-bold uppercase tracking-widest text-neutral-900 dark:text-white">
+            {currentPage} <span className="text-neutral-400 mx-2">/</span> {totalPages}
           </p>
           <button
             onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
-            className="inline-flex items-center gap-1 px-3 sm:px-4 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-xs sm:text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            {t('gallery.pagination.next')}
-            <ChevronRight size={16} />
+            <ChevronRight size={24} strokeWidth={1.5} />
           </button>
         </div>
       )}
