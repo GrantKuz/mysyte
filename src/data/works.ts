@@ -1,5 +1,4 @@
 import { Work } from '../types';
-const base = import.meta.env.BASE_URL;
 
 
 export const works: Work[] = [
@@ -9,20 +8,20 @@ export const works: Work[] = [
     project: 'Old World Tech',
     polygons: '12,400',
     description: 'A detailed vintage radio from the 1940s. Textured in Substance Painter with a focus on wear and tear.',
-    thumbnail: base + '/img/plazma gen1_unw.png',
-    renderUrl: base + '/img/plazma gen1_unw.png',
-    wireframeUrl: base + '/img/wire_plazma1.png',
+    thumbnail: '/img/plazma gen1_unw.png',
+    renderUrl: '/img/plazma gen1_unw.png',
+    wireframeUrl: '/img/wire_plazma1.png',
     images: [
       {
-        renderUrl: base + '/img/plazma gen1_unw.png',
-        wireframeUrl: base + '/img/wire_plazma1.png'
+        renderUrl: '/img/plazma gen1_unw.png',
+        wireframeUrl: '/img/wire_plazma1.png'
       },
       {
-        renderUrl: base + '/img/plazma gen2_unw.png',
-        wireframeUrl: base + '/img/wire_plazma2.png'
+        renderUrl: '/img/plazma gen2_unw.png',
+        wireframeUrl: '/img/wire_plazma2.png'
       }
     ],
-    modelUrl: base + '/models/Plazma_Generator.glb',
+    modelUrl: '/models/Plazma_Generator.glb',
     type: 'prop'
   },
   {
@@ -31,10 +30,10 @@ export const works: Work[] = [
     project: 'Neon Nights',
     polygons: '8,200',
     description: 'High-frequency blade with emissive details. Optimized for real-time engines.',
-    thumbnail: base + '/img/clock_unw.png',
-    renderUrl: base + '/img/clock_unw.png',
-    wireframeUrl: base + '/img/wire_clock.png',
-    modelUrl: base + '/models/Volobueva M.A.glb',
+    thumbnail: '/img/clock_unw.png',
+    renderUrl: '/img/clock_unw.png',
+    wireframeUrl: '/img/wire_clock.png',
+    modelUrl: '/models/Volobueva M.A.glb',
     type: 'prop'
   },
   {
@@ -43,10 +42,10 @@ export const works: Work[] = [
     project: 'Dungeon Loot',
     polygons: '4,500',
     description: 'Stylized chest with hand-painted textures. Features a functional lock mechanism.',
-    thumbnail: base + '/img/thermo plazma_unw.png',
-    renderUrl: base + '/img/thermo plazma_unw.png',
-    wireframeUrl: base + '/img/wire_thermo_plazma.png',
-    modelUrl: base + '/models/ThermoPlasmaGen.glb',
+    thumbnail: '/img/thermo plazma_unw.png',
+    renderUrl: '/img/thermo plazma_unw.png',
+    wireframeUrl: '/img/wire_thermo_plazma.png',
+    modelUrl: '/models/ThermoPlasmaGen.glb',
     type: 'prop'
   },
   {
@@ -58,7 +57,7 @@ export const works: Work[] = [
     thumbnail: 'https://picsum.photos/seed/lab/600/600',
     renderUrl: '',
     wireframeUrl: '',
-    videoUrl: base + '/videos/Rayl_cinematic.mp4',
+    videoUrl: '/videos/Rayl_cinematic.mp4',
     type: 'cinematic'
   },
   {
