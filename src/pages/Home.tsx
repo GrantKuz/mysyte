@@ -6,7 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -18,6 +18,7 @@ export default function Home() {
 
   const software = ['Blender', 'Substance 3D Painter', 'ZBrush', 'Unreal Engine 5', 'Photoshop', 'Marmoset Toolbag'];
   const marqueeItems = [...software, ...software, ...software, ...software];
+  const expertiseTitle = language === 'ru' ? 'Экспертиза' : 'Expertise';
 
   // 3D Tilt эффект для фото
   const x = useMotionValue(0);
@@ -148,7 +149,7 @@ export default function Home() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 1, delay: 0.2, ease }}
             >
-              <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold text-neutral-400 mb-8">Expertise</h2>
+              <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold text-neutral-400 mb-8">{expertiseTitle}</h2>
               <ul className="space-y-8">
                 {[{ title: t('skills.prop.title'), desc: t('skills.prop.desc') }, { title: t('skills.texturing.title'), desc: t('skills.texturing.desc') }, { title: t('skills.opt.title'), desc: t('skills.opt.desc') }].map((skill, i) => (
                   <li key={i} className="border-b border-neutral-200 dark:border-neutral-800 pb-8 last:border-0 last:pb-0">

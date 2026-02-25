@@ -40,6 +40,9 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
   const title = language === 'ru' ? work.titleRu ?? work.title : work.title;
   const project = language === 'ru' ? work.projectRu ?? work.project : work.project;
   const description = language === 'ru' ? work.descriptionRu ?? work.description : work.description;
+  const unavailableTitle = language === 'ru' ? 'Медиа недоступно' : 'Media unavailable';
+  const unavailableSubtitle =
+    language === 'ru' ? 'Файл отсутствует или временно недоступен' : 'File missing or temporarily inaccessible';
   const showVideo = work.type === 'cinematic' && Boolean(work.videoUrl);
   const showRenderImage = !view3D && !showVideo;
 
@@ -190,8 +193,14 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
             )}
 
             {showRenderFallback && (
-              <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
-                <div className="w-12 h-12 rounded-full border border-neutral-300 dark:border-neutral-700" />
+              <div className="absolute inset-0 grid place-items-center px-4 text-neutral-500 dark:text-neutral-300 bg-gradient-to-br from-neutral-200/70 via-neutral-100 to-neutral-300/40 dark:from-neutral-950 dark:via-neutral-900 dark:to-black">
+                <div className="w-full max-w-[300px] border border-neutral-300/80 dark:border-neutral-700/70 rounded-2xl px-5 py-6 text-center bg-white/65 dark:bg-black/35 backdrop-blur-sm">
+                  <p className="text-[11px] font-black tracking-[0.32em] uppercase text-neutral-400 dark:text-neutral-500">
+                    GK.ART
+                  </p>
+                  <p className="mt-2 text-[11px] uppercase tracking-[0.24em] font-bold">{unavailableTitle}</p>
+                  <p className="mt-2 text-xs text-neutral-500/95 dark:text-neutral-400">{unavailableSubtitle}</p>
+                </div>
               </div>
             )}
 
@@ -242,8 +251,16 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
                   </div>
                 )}
                 {showVideoFallback && (
-                  <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
-                    <div className="w-12 h-12 rounded-full border border-neutral-600/80" />
+                  <div className="absolute inset-0 grid place-items-center px-4 text-neutral-400 bg-gradient-to-br from-neutral-900 via-neutral-950 to-black">
+                    <div className="w-full max-w-[300px] border border-neutral-700/70 rounded-2xl px-5 py-6 text-center bg-black/35 backdrop-blur-sm">
+                      <p className="text-[11px] font-black tracking-[0.32em] uppercase text-neutral-500">
+                        GK.ART
+                      </p>
+                      <p className="mt-2 text-[11px] uppercase tracking-[0.24em] font-bold text-neutral-300">
+                        {unavailableTitle}
+                      </p>
+                      <p className="mt-2 text-xs text-neutral-500">{unavailableSubtitle}</p>
+                    </div>
                   </div>
                 )}
                 {videoSrc && (

@@ -50,6 +50,9 @@ function GalleryCard({ work, index, onWorkClick }: GalleryCardProps) {
   const hasImageSource = Boolean(thumbnailUrl);
   const showLoader = isResolving || (hasImageSource && !isLoaded && !isFailed);
   const showFallback = !showLoader && (!hasImageSource || isFailed || Boolean(error));
+  const unavailableTitle = language === 'ru' ? 'Нет превью' : 'Preview unavailable';
+  const unavailableSubtitle =
+    language === 'ru' ? 'Файл отсутствует или недоступен' : 'Asset missing or inaccessible';
 
   return (
     <motion.div
@@ -58,7 +61,7 @@ function GalleryCard({ work, index, onWorkClick }: GalleryCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.8 }}
       onClick={() => onWorkClick(work)}
-      className="group relative aspect-[4/5] bg-neutral-100 dark:bg-neutral-900 overflow-hidden cursor-pointer"
+      className="group relative aspect-[4/5] bg-neutral-100 dark:bg-neutral-900 overflow-hidden cursor-none"
     >
       {thumbnailUrl && (
         <img
@@ -89,8 +92,14 @@ function GalleryCard({ work, index, onWorkClick }: GalleryCardProps) {
       )}
 
       {showFallback && (
-        <div className="absolute inset-0 flex items-center justify-center text-neutral-400 bg-neutral-100 dark:bg-neutral-900">
-          <div className="w-10 h-10 rounded-full border border-neutral-300 dark:border-neutral-700" />
+        <div className="absolute inset-0 grid place-items-center px-4 text-neutral-500 dark:text-neutral-300 bg-gradient-to-br from-neutral-100 to-neutral-200/70 dark:from-neutral-900 dark:to-neutral-950">
+          <div className="w-full max-w-[220px] border border-neutral-300/80 dark:border-neutral-700/70 rounded-xl px-4 py-5 text-center bg-white/60 dark:bg-black/30 backdrop-blur-sm">
+            <p className="text-[10px] font-black tracking-[0.28em] uppercase text-neutral-400 dark:text-neutral-500">
+              GK.ART
+            </p>
+            <p className="mt-2 text-[10px] uppercase tracking-[0.2em] font-bold">{unavailableTitle}</p>
+            <p className="mt-1 text-[10px] text-neutral-500/90 dark:text-neutral-400">{unavailableSubtitle}</p>
+          </div>
         </div>
       )}
 

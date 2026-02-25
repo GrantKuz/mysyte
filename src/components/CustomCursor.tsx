@@ -9,7 +9,7 @@ export default function CustomCursor() {
   const cursorY = useMotionValue(-100);
 
   // Пружинная физика для плавного отставания
-  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
+  const springConfig = { damping: 20, stiffness: 520, mass: 0.25 };
   const smoothX = useSpring(cursorX, springConfig);
   const smoothY = useSpring(cursorY, springConfig);
 
